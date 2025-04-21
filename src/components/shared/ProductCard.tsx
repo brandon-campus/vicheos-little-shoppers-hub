@@ -29,9 +29,9 @@ const ProductCard = ({
     : price;
 
   const formatPrice = (amount: number) => {
-    return new Intl.NumberFormat("es-ES", {
+    return new Intl.NumberFormat("es-PE", {
       style: "currency",
-      currency: "EUR",
+      currency: "PEN",
     }).format(amount);
   };
 
@@ -110,3 +110,4 @@ const ProductCard = ({
 };
 
 export default ProductCard;
+
