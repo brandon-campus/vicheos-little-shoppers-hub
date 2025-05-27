@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { 
@@ -54,9 +53,9 @@ const ProductDetailPage = () => {
     
   // Format price as currency
   const formatPrice = (amount: number) => {
-    return new Intl.NumberFormat("es-ES", {
+    return new Intl.NumberFormat("es-PE", {
       style: "currency",
-      currency: "EUR",
+      currency: "PEN",
     }).format(amount);
   };
   
@@ -75,15 +74,24 @@ const ProductDetailPage = () => {
     }
   };
   
-  // Handle add to cart
+  // Handle add to cart - now redirects to Tally form
   const handleAddToCart = () => {
-    toast.success(`${product.name} añadido al carrito (${quantity} unidad${quantity > 1 ? 'es' : ''})`);
+    if (product.tallyFormUrl) {
+      window.location.href = product.tallyFormUrl;
+    } else {
+      // Fallback or show an error if no Tally form URL is available
+      toast.error("No hay un formulario de compra disponible para este producto.");
+    }
   };
   
-  // Handle buy now
+  // Handle buy now - also redirects to Tally form
   const handleBuyNow = () => {
-    toast.success(`Procediendo a la compra de ${product.name}`);
-    // In a real app, this would redirect to the checkout page
+    if (product.tallyFormUrl) {
+       window.location.href = product.tallyFormUrl;
+    } else {
+      // Fallback or show an error if no Tally form URL is available
+      toast.error("No hay un formulario de compra disponible para este producto.");
+    }
   };
   
   // For demo purposes, we'll use the main image multiple times for the gallery
@@ -210,7 +218,7 @@ const ProductDetailPage = () => {
               </ul>
             </div>
             
-            {/* Quantity Selector */}
+            {/* Quantity Selector - Keep for display, but logic is simpler now */}
             <div className="flex items-center mb-6">
               <span className="mr-4 text-gray-700">Cantidad:</span>
               <div className="flex border border-gray-300 rounded-md">
@@ -230,21 +238,21 @@ const ProductDetailPage = () => {
               </div>
             </div>
             
-            {/* Action Buttons */}
+            {/* Action Buttons - Both redirect to Tally form */}
             <div className="flex flex-col sm:flex-row gap-4 mb-8">
               <Button
-                onClick={handleAddToCart}
+                onClick={handleAddToCart} // Use handleAddToCart which now redirects
                 variant="outline"
                 className="flex-1 border-[#D3E4FD] hover:bg-[#D3E4FD] text-gray-800 text-lg py-6"
               >
                 <ShoppingCart size={20} className="mr-2" />
-                Añadir al carrito
+                Comprar (Formulario)
               </Button>
               <Button
-                onClick={handleBuyNow}
+                onClick={handleBuyNow} // Use handleBuyNow which now redirects
                 className="flex-1 bg-[#FEC6A1] hover:bg-[#f9b789] text-gray-800 text-lg py-6"
               >
-                Comprar ahora
+                Comprar ahora (Formulario)
               </Button>
             </div>
             
@@ -290,11 +298,11 @@ const ProductDetailPage = () => {
           </div>
         </div>
         
-        {/* Related Products */}
+        {/* Related Products (Optional - you can remove this section if not needed) */}
         {relatedProducts.length > 0 && (
-          <div className="mb-12">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-6">Productos relacionados</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="mt-12">
+            <h3 className="text-2xl font-semibold text-gray-800 mb-6">También te puede interesar</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {relatedProducts.map((relatedProduct) => (
                 <ProductCard
                   key={relatedProduct.id}
@@ -305,6 +313,7 @@ const ProductDetailPage = () => {
                   isNew={relatedProduct.isNew}
                   isOffer={relatedProduct.isOffer}
                   discountPercentage={relatedProduct.discountPercentage}
+                  tallyFormUrl={relatedProduct.tallyFormUrl}
                 />
               ))}
             </div>

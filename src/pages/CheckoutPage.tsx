@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -52,9 +51,9 @@ const CheckoutPage = () => {
   
   // Format price as currency
   const formatPrice = (amount: number) => {
-    return new Intl.NumberFormat("es-ES", {
+    return new Intl.NumberFormat("es-PE", {
       style: "currency",
-      currency: "EUR",
+      currency: "PEN",
     }).format(amount);
   };
   
@@ -253,7 +252,7 @@ const CheckoutPage = () => {
                           <p className="text-sm text-gray-500">Entrega en 2-4 días laborables</p>
                         </div>
                         <div className="font-medium">
-                          {subtotal >= 50 ? "Gratis" : formatPrice(4.99)}
+                          {subtotal >= 50 ? "Gratis" : formatPrice(15.90)}
                         </div>
                       </div>
                     </Label>
@@ -267,7 +266,7 @@ const CheckoutPage = () => {
                           <p className="font-medium">Envío express</p>
                           <p className="text-sm text-gray-500">Entrega en 24-48 horas</p>
                         </div>
-                        <div className="font-medium">{formatPrice(9.99)}</div>
+                        <div className="font-medium">{formatPrice(29.90)}</div>
                       </div>
                     </Label>
                   </div>

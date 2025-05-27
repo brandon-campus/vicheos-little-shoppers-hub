@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 import { ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -29,9 +28,9 @@ const ProductCard = ({
     : price;
 
   const formatPrice = (amount: number) => {
-    return new Intl.NumberFormat("es-ES", {
+    return new Intl.NumberFormat("es-PE", {
       style: "currency",
-      currency: "EUR",
+      currency: "PEN",
     }).format(amount);
   };
 

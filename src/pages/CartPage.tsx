@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ShoppingCart, Trash2, CreditCard } from "lucide-react";
@@ -60,9 +59,9 @@ const CartPage = () => {
   
   // Format price as currency
   const formatPrice = (amount: number) => {
-    return new Intl.NumberFormat("es-ES", {
+    return new Intl.NumberFormat("es-PE", {
       style: "currency",
-      currency: "EUR",
+      currency: "PEN",
     }).format(amount);
   };
   

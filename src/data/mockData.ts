@@ -1,219 +1,206 @@
-
 export const products = [
   {
-    id: 1,
-    name: "Monitor de bebé inteligente con cámara HD",
-    price: 149.99,
-    image: "https://images.unsplash.com/photo-1558021212-51b6ecfa0db9?w=800&h=800&auto=format&fit=crop",
-    description: "Monitor de bebé con cámara HD, visión nocturna, sensor de temperatura y humedad, y conexión a la app móvil para vigilar a tu bebé en cualquier momento.",
+    id: 105,
+    name: "Orejeras de seguridad con cancelación de ruido para bebés",
+    price: 266,
+    image: "https://bicheos.com/wp-content/uploads/2025/04/FOTO-PRINCIPAL.png",
+    description: "Protege las delicadas orejas de tu bebé con estas orejeras con cancelación de ruido. Ofrecen una reducción de hasta 25 dB, ideales para conciertos, viajes o eventos. Diadema suave sin presión, plegables y fáciles de transportar. Incluye bolsa con cordón. Apto para bebés de 0 a 48 meses.",
     isNew: true,
     isOffer: false,
     discountPercentage: 0,
     category: 1,
-    stock: 15,
-    rating: 4.7,
-    reviews: 24,
-    features: [
-      "Cámara HD 1080p",
-      "Visión nocturna",
-      "Audio bidireccional",
-      "Sensor de temperatura y humedad",
-      "Notificaciones de movimiento y sonido",
-      "Compatible con iOS y Android"
-    ]
-  },
-  {
-    id: 2,
-    name: "Termómetro digital sin contacto",
-    price: 39.99,
-    image: "https://images.unsplash.com/photo-1584840467421-c3e6c55cdb2a?w=800&h=800&auto=format&fit=crop",
-    description: "Termómetro digital sin contacto con tecnología infrarroja para medir la temperatura de tu bebé sin despertarlo. Resultados precisos en 1 segundo.",
-    isNew: false,
-    isOffer: true,
-    discountPercentage: 20,
-    category: 2,
-    stock: 25,
+    stock: 1,
     rating: 4.5,
-    reviews: 18,
+    reviews: 0,
     features: [
-      "Medición sin contacto",
-      "Resultados en 1 segundo",
-      "Pantalla LCD retroiluminada",
-      "Alarma de fiebre",
-      "Memoria de 20 mediciones",
-      "Apagado automático"
-    ]
+      "Cancelación de ruido (25 dB)",
+      "Diadema suave sin presión",
+      "Plegables y portátiles",
+      "Incluye bolsa con cordón",
+      "Apto para 0-48 meses"
+    ],
+    tallyFormUrl: "https://tally.so/r/wAGd2B"
   },
   {
-    id: 3,
-    name: "Chupete inteligente con termómetro integrado",
-    price: 24.99,
-    image: "https://images.unsplash.com/photo-1586371045050-ab9b2a9d7e4a?w=800&h=800&auto=format&fit=crop",
-    description: "Chupete con termómetro integrado que permite medir la temperatura de tu bebé mientras duerme o se relaja. Conectado a la app para seguimiento continuo.",
+    id: 106,
+    name: "Esterilizador Portátil UV para Chupones Mommed",
+    price: 260,
+    image: "https://bicheos.com/wp-content/uploads/2025/04/FOTO-PRINCIPAL-1.png",
+    description: "Esteriliza rápidamente chupetes con luz UV sin químicos ni agua. Portátil, con correa para cochecito. Elimina 99,9% de bacterias. Batería recargable USB-C.",
     isNew: true,
-    isOffer: true,
-    discountPercentage: 15,
-    category: 2,
-    stock: 18,
-    rating: 4.2,
-    reviews: 12,
+    isOffer: false,
+    discountPercentage: 0,
+    category: 1,
+    stock: 1,
+    rating: 4.5,
+    reviews: 0,
     features: [
-      "Termómetro integrado",
-      "Material silicona grado médico",
-      "Conexión Bluetooth",
-      "Alertas de temperatura",
-      "Batería de larga duración",
-      "Fácil de limpiar"
-    ]
+      "Esterilización UV sin químicos",
+      "Portátil con correa",
+      "Elimina 99.9% de bacterias",
+      "Batería recargable USB-C",
+      "Sin necesidad de agua"
+    ],
+    tallyFormUrl: "https://tally.so/r/wLNb7G"
   },
   {
-    id: 4,
-    name: "Cuna inteligente con balanceo automático",
-    price: 299.99,
-    image: "https://images.unsplash.com/photo-1556894689-e5e6451c1cf8?w=800&h=800&auto=format&fit=crop",
-    description: "Cuna inteligente con balanceo automático que imita el movimiento natural de los brazos. Incluye sonidos blancos, luces nocturnas y monitoreo del sueño.",
-    isNew: false,
+    id: 107,
+    name: "Almohadillas para Senos Especial Lactancia (2 piezas)",
+    price: 127,
+    image: "https://bicheos.com/wp-content/uploads/2025/04/FOTO-PRINCIPAL-2.png",
+    description: "Diseño en PVC y terciopelo para frío o calor. Reduce inflamación, mejora la circulación y alivia molestias de la lactancia. Cómodas, reutilizables y ergonómicas.",
+    isNew: true,
+    isOffer: false,
+    discountPercentage: 0,
+    category: 2,
+    stock: 1,
+    rating: 4.5,
+    reviews: 0,
+    features: [
+      "Efecto frío/calor",
+      "Reduce inflamación",
+      "Mejora la circulación",
+      "Reutilizables",
+      "Diseño ergonómico"
+    ],
+    tallyFormUrl: "https://tally.so/r/np1KyV"
+  },
+  {
+    id: 108,
+    name: "Termómetro de Agua con Detección de Temperatura – Elefante",
+    price: 207,
+    image: "https://bicheos.com/wp-content/uploads/2025/04/FOTO-PRINCIPAL-3.png",
+    description: "Mide la temperatura del agua del baño con alta precisión. Diseño seguro para bebés, portátil y compacto. Ideal para recién nacidos.",
+    isNew: true,
+    isOffer: false,
+    discountPercentage: 0,
+    category: 1,
+    stock: 1,
+    rating: 4.5,
+    reviews: 0,
+    features: [
+      "Diseño seguro para bebés",
+      "Alta precisión",
+      "Portátil y compacto",
+      "Ideal para recién nacidos",
+      "Fácil de usar"
+    ],
+    tallyFormUrl: "https://tally.so/r/wMqbNY"
+  },
+  {
+    id: 109,
+    name: "Taza Giratoria 360° Anti-Derrames",
+    price: 109,
+    image: "https://bicheos.com/wp-content/uploads/2025/04/FOTO-PRINCIPAL-4.png",
+    description: "Tazón con diseño tipo Saturno, gira 360° para evitar derrames. Tres asas y tapa incluida. Hecho de material PP de grado alimenticio.",
+    isNew: true,
+    isOffer: false,
+    discountPercentage: 0,
+    category: 2,
+    stock: 1,
+    rating: 4.5,
+    reviews: 0,
+    features: [
+      "Diseño giratorio 360°",
+      "Anti-derrames",
+      "Tres asas ergonómicas",
+      "Tapa incluida",
+      "Material PP grado alimenticio"
+    ],
+    tallyFormUrl: "https://tally.so/r/mJx6pJ"
+  },
+  {
+    id: 110,
+    name: "Lima de Uñas Eléctrica para Bebés",
+    price: 169,
+    image: "https://bicheos.com/wp-content/uploads/2025/04/FOTO-PRINCIPAL-5.png",
+    description: "Corta y pule uñas de forma segura. Silenciosa, liviana y fácil de usar. Incluye cabezales de pulido. No interrumpe el sueño del bebé.",
+    isNew: true,
     isOffer: false,
     discountPercentage: 0,
     category: 3,
-    stock: 8,
-    rating: 4.8,
-    reviews: 32,
+    stock: 1,
+    rating: 4.5,
+    reviews: 0,
     features: [
-      "5 velocidades de balanceo",
-      "8 sonidos blancos y nanas",
-      "Luces nocturnas integradas",
-      "Monitoreo del sueño",
-      "Control por app móvil",
-      "Tejidos hipoalergénicos"
-    ]
+      "Operación silenciosa",
+      "Cabezales de pulido incluidos",
+      "Liviana y portátil",
+      "No interrumpe el sueño",
+      "Fácil de usar"
+    ],
+    tallyFormUrl: "https://tally.so/r/wg10dN"
   },
   {
-    id: 5,
-    name: "Esterilizador UV para biberones y chupetes",
-    price: 79.99,
-    image: "https://images.unsplash.com/photo-1595751866979-a1a1863e2693?w=800&h=800&auto=format&fit=crop",
-    description: "Esterilizador UV que elimina el 99.9% de bacterias y gérmenes en biberones, chupetes y accesorios del bebé en solo 5 minutos sin necesidad de usar productos químicos.",
-    isNew: false,
-    isOffer: true,
-    discountPercentage: 10,
-    category: 4,
-    stock: 12,
-    rating: 4.6,
-    reviews: 15,
-    features: [
-      "Tecnología UV-C",
-      "Esterilización en 5 minutos",
-      "Capacidad para 6 biberones",
-      "Función de secado",
-      "Indicador LED",
-      "Operación silenciosa"
-    ]
-  },
-  {
-    id: 6,
-    name: "Báscula digital para bebés con app",
-    price: 89.99,
-    image: "https://images.unsplash.com/photo-1520637102912-2df6bb2aec6d?w=800&h=800&auto=format&fit=crop",
-    description: "Báscula digital de alta precisión para seguir el crecimiento de tu bebé. Conectada a una app que registra y grafica el peso a lo largo del tiempo.",
+    id: 111,
+    name: "Mochila Multifuncional para Artículos de Bebé",
+    price: 269,
+    image: "https://bicheos.com/wp-content/uploads/2025/04/FOTO-PRINCIPAL-6.png",
+    description: "Mochila maternal 3 en 1 con cambiador y cuna plegable. Gran capacidad, resistente e impermeable. Organiza biberones, pañales y más.",
     isNew: true,
     isOffer: false,
     discountPercentage: 0,
-    category: 2,
-    stock: 10,
-    rating: 4.4,
-    reviews: 9,
+    category: 4,
+    stock: 1,
+    rating: 4.5,
+    reviews: 0,
     features: [
-      "Precisión de 5g",
-      "Superficie curva y segura",
-      "Conexión Bluetooth",
-      "Gráficos de crecimiento",
-      "Memoria para varios perfiles",
-      "Batería recargable"
-    ]
+      "3 en 1: mochila, cambiador y cuna",
+      "Gran capacidad",
+      "Resistente e impermeable",
+      "Organizador múltiple",
+      "Plegable y portátil"
+    ],
+    tallyFormUrl: "https://tally.so/r/3XkDJO"
   },
   {
-    id: 7,
-    name: "Calentador de biberones inteligente",
-    price: 49.99,
-    image: "https://images.unsplash.com/photo-1635766054459-8df740364df5?w=800&h=800&auto=format&fit=crop",
-    description: "Calentador de biberones inteligente con control de temperatura preciso, temporizador y modo de descongelación. Mantiene la leche a temperatura perfecta.",
-    isNew: false,
+    id: 112,
+    name: "Termómetro de Agua 3 en 1 – Tortuga",
+    price: 249,
+    image: "https://bicheos.com/wp-content/uploads/2025/04/FOTO-PRINCIPAL-7.png",
+    description: "Divertido termómetro LED con forma de tortuga. Sensor de alta precisión. Indicadores de color para verificar temperatura. Portátil y duradero.",
+    isNew: true,
     isOffer: false,
     discountPercentage: 0,
-    category: 4,
-    stock: 14,
-    rating: 4.3,
-    reviews: 11,
-    features: [
-      "Calentamiento rápido y uniforme",
-      "Control de temperatura preciso",
-      "Modo de descongelación",
-      "Compatible con todos los biberones",
-      "Apagado automático",
-      "Pantalla táctil intuitiva"
-    ]
-  },
-  {
-    id: 8,
-    name: "Intercomunicador de bebé con sensor de llanto",
-    price: 59.99,
-    image: "https://images.unsplash.com/photo-1601085558053-4febf560dd7d?w=800&h=800&auto=format&fit=crop",
-    description: "Intercomunicador de bebé con tecnología de reconocimiento de llanto, que te avisa inmediatamente cuando tu bebé está llorando, incluso sin ruido ambiental.",
-    isNew: false,
-    isOffer: true,
-    discountPercentage: 25,
     category: 1,
-    stock: 20,
+    stock: 1,
     rating: 4.5,
-    reviews: 16,
+    reviews: 0,
     features: [
-      "Detección de llanto avanzada",
-      "Alcance de 300 metros",
-      "Luces indicadoras de sonido",
-      "Nanas programables",
-      "Modo de ahorro de energía",
-      "Batería de 18 horas"
-    ]
+      "Diseño LED con forma de tortuga",
+      "Sensor de alta precisión",
+      "Indicadores de color",
+      "Portátil",
+      "Duradero"
+    ],
+    tallyFormUrl: "https://tally.so/r/w8yKaA"
   }
 ];
 
 export const categories = [
   {
     id: 1,
-    name: "Monitores y Cámaras",
-    image: "https://images.unsplash.com/photo-1579132568398-52a7358a70d5?w=800&h=400&auto=format&fit=crop",
-    productCount: 8
+    name: "Seguridad y Protección",
+    image: "/img/seguridad.jpg",
+    productCount: 4
   },
   {
     id: 2,
-    name: "Salud y Bienestar",
-    image: "https://images.unsplash.com/photo-1582139329536-e7284fece509?w=800&h=400&auto=format&fit=crop",
-    productCount: 12
+    name: "Alimentación y Lactancia",
+    image: "/img/alimentacion2.jpg",
+    productCount: 2
   },
   {
     id: 3,
-    name: "Mobiliario Inteligente",
-    image: "https://images.unsplash.com/photo-1556894689-e5e6451c1cf8?w=800&h=400&auto=format&fit=crop",
-    productCount: 6
+    name: "Cuidados e Higiene del bebé",
+    image: "/img/higiene.png",
+    productCount: 1
   },
   {
     id: 4,
-    name: "Alimentación",
-    image: "https://images.unsplash.com/photo-1635766054459-8df740364df5?w=800&h=400&auto=format&fit=crop",
-    productCount: 10
-  },
-  {
-    id: 5,
-    name: "Juguetes Interactivos",
-    image: "https://images.unsplash.com/photo-1696307216650-542c8eefb01e?w=800&h=400&auto=format&fit=crop",
-    productCount: 9
-  },
-  {
-    id: 6,
-    name: "Seguridad",
-    image: "https://images.unsplash.com/photo-1604437676312-8057182e590d?w=800&h=400&auto=format&fit=crop",
-    productCount: 7
+    name: "Paseo y Viajes con el bebé",
+    image: "/img/paseo.jpg",
+    productCount: 1
   }
 ];
 
