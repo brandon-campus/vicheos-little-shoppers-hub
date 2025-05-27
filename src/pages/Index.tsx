@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 import { ChevronRight, Package, CreditCard, Phone, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -21,7 +20,7 @@ const Index = () => {
           <div className="flex flex-col md:flex-row items-center">
             <div className="flex-1 mb-8 md:mb-0 md:pr-8 text-center md:text-left">
               <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4 animate-fade-in">
-                Tecnología innovadora para tu bebé
+                Tecnología para el cuidado de tu bebé
               </h1>
               <p className="text-lg text-gray-600 mb-8 animate-fade-in">
                 Productos electrónicos que facilitan la vida de las mamás primerizas y mejoran el bienestar de sus bebés.
