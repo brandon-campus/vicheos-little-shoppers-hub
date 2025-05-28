@@ -7,54 +7,203 @@ import CategoryCard from "@/components/shared/CategoryCard";
 import TestimonialCard from "@/components/shared/TestimonialCard";
 import NewsletterForm from "@/components/shared/NewsletterForm";
 import { products, categories, testimonials, benefits } from "@/data/mockData";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import React from 'react';
+
+interface Slide {
+  background?: string;
+  backgroundImage?: string;
+  content: React.ReactNode;
+}
 
 const Index = () => {
   const featuredProducts = products.slice(0, 4);
   const featuredCategories = categories.slice(0, 4);
 
-  return (
-    <Layout>
-      {/* Hero Section */}
-      <section className="relative pt-12 pb-20 md:py-20 px-4">
-        <div className="container mx-auto">
-          <div className="flex flex-col md:flex-row items-center">
-            <div className="flex-1 mb-8 md:mb-0 md:pr-8 text-center md:text-left">
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4 animate-fade-in">
-                Tecnología para el cuidado de tu bebé
-              </h1>
-              <p className="text-lg text-gray-600 mb-8 animate-fade-in">
-                Productos electrónicos que facilitan la vida de las mamás primerizas y mejoran el bienestar de sus bebés.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start animate-fade-in">
-                <Button 
-                  size="lg"
-                  className="bg-[#D3E4FD] hover:bg-[#c1d8f8] text-gray-800"
-                  asChild
-                >
-                  <Link to="/productos">
-                    Ver Productos
-                    <ChevronRight size={18} className="ml-2" />
-                  </Link>
-                </Button>
-                <Button 
-                  size="lg"
-                  variant="outline"
-                  className="border-[#FEC6A1] hover:bg-[#FEC6A1] text-gray-800"
-                  asChild
-                >
-                  <Link to="/contacto">Conocer más</Link>
-                </Button>
-              </div>
-            </div>
-            <div className="flex-1 animate-fade-in">
-              <img 
-                src="https://images.unsplash.com/photo-1555252333-9f8e92e65df9?auto=format&fit=crop&w=600"
-                alt="Tecnología para bebés" 
-                className="rounded-2xl shadow-lg w-full max-w-md mx-auto"
-              />
+  const settings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 5000,
+    arrows: true,
+  };
+
+  const orejerasProduct = products.find(p => p.id === 105);
+  const mochilaProduct = products.find(p => p.id === 111);
+
+  const slides: Slide[] = [
+    // Slide 1: Original Hero Section with Image Background
+    {
+      backgroundImage: '/img/productosparabebes.jpg',
+      content: (
+        <div className="flex flex-col md:flex-row items-center w-full">
+          <div className="flex-1 mb-8 md:mb-0 md:pr-8 text-center md:text-left">
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4 animate-fade-in">
+              Tecnología para el cuidado de tu bebé
+            </h1>
+            <p className="text-lg text-gray-600 mb-8 animate-fade-in">
+              Productos electrónicos que facilitan la vida de las mamás primerizas y mejoran el bienestar de sus bebés.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start animate-fade-in">
+              <Button 
+                size="lg"
+                className="bg-[#D3E4FD] hover:bg-[#c1d8f8] text-gray-800"
+                asChild
+              >
+                <Link to="/productos">
+                  Ver Productos
+                  <ChevronRight size={18} className="ml-2" />
+                </Link>
+              </Button>
+              <Button 
+                size="lg"
+                variant="outline"
+                className="border-[#FEC6A1] hover:bg-[#FEC6A1] text-gray-800"
+                asChild
+              >
+                <Link to="/contacto">Conocer más</Link>
+              </Button>
             </div>
           </div>
+          <div className="flex-1 flex justify-center items-center animate-fade-in">
+             <img
+               src="/img/productosparabebes.jpg"
+               alt="Imagen de tecnología para bebés (emocional)"
+               className="rounded-2xl shadow-lg w-full max-w-sm h-64 object-cover"
+             />
+          </div>
         </div>
+      ),
+    },
+    // Slide 2: Orejeras with Gradient Background
+    {
+      background: 'linear-gradient(180deg, #FEC6A1, #D3E4FD)',
+      content: (
+        <div className="flex flex-col md:flex-row items-center w-full">
+          <div className="flex-1 mb-8 md:mb-0 md:pr-8 text-center md:text-left">
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
+              Seguridad y tranquilidad en todo momento
+            </h1>
+            <p className="text-lg text-gray-600 mb-8">
+              Nuestras orejeras con cancelación de ruido cuidan la audición de tu bebé en ambientes ruidosos, para que siempre esté tranquilo y seguro.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+              <Button
+                size="lg"
+                className="bg-[#D3E4FD] hover:bg-[#c1d8f8] text-gray-800"
+                asChild
+              >
+                <Link to={`/producto/${orejerasProduct?.id}`}>
+                  Ver producto
+                  <ChevronRight size={18} className="ml-2" />
+                </Link>
+              </Button>
+            </div>
+          </div>
+          <div className="flex-1 flex justify-center items-center">
+             <img
+               src="/img/mochilamultifuncional.png"
+               alt="Bebé con orejeras y padre/madre (emocional)"
+               className="rounded-2xl shadow-lg w-full max-w-sm h-64 object-cover"
+             />
+          </div>
+        </div>
+      ),
+    },
+     // Slide 3: Mochila with Gradient Background
+    {
+      background: 'linear-gradient(180deg, #FEC6A1, #D3E4FD)',
+      content: (
+        <div className="flex flex-col md:flex-row items-center w-full">
+          <div className="flex-1 mb-8 md:mb-0 md:pr-8 text-center md:text-left">
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
+              Todo en su lugar, siempre
+            </h1>
+            <p className="text-lg text-gray-600 mb-8">
+              Nuestra mochila multifuncional está diseñada para tener todo lo que necesita tu bebé al alcance, organizada y con estilo.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+              <Button
+                size="lg"
+                className="bg-[#D3E4FD] hover:bg-[#c1d8f8] text-gray-800"
+                asChild
+              >
+                <Link to={`/producto/${mochilaProduct?.id}`}>
+                  Ver Mochilas Inteligentes
+                  <ChevronRight size={18} className="ml-2" />
+                </Link>
+              </Button>
+            </div>
+          </div>
+          <div className="flex-1 flex justify-center items-center">
+             <img
+               src="/img/bicheoscol.jpg"
+               alt="Escena emocional con la mochila"
+               className="rounded-2xl shadow-lg w-full max-w-sm h-64 object-cover"
+             />
+          </div>
+        </div>
+      ),
+    },
+    // Slide 4: Pago con Yape with Gradient Background
+    {
+      background: 'linear-gradient(180deg, #FEC6A1, #D3E4FD)',
+      content: (
+        <div className="flex flex-col md:flex-row items-center w-full">
+          <div className="flex-1 mb-8 md:mb-0 md:pr-8 text-center md:text-left">
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
+              ¡Pagá en segundos con Yape!
+            </h1>
+            <p className="text-lg text-gray-600 mb-8">
+              En Vicheos aceptamos Yape para que puedas comprar lo que tu bebé necesita de forma rápida, segura y sin complicaciones.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+              <Button
+                size="lg"
+                className="bg-[#FEC6A1] hover:bg-[#f9b789] text-gray-800"
+                asChild
+              >
+                <Link to="/productos">
+                  Ver productos
+                  <ChevronRight size={18} className="ml-2" />
+                </Link>
+              </Button>
+            </div>
+          </div>
+          <div className="flex-1 flex justify-center items-center">
+             <img
+               src="/img/yapess.png"
+               alt="Imagen de pago con Yape (emocional)"
+               className="rounded-2xl shadow-lg w-full max-w-sm h-64 object-cover"
+             />
+          </div>
+        </div>
+      ),
+    },
+  ];
+
+  return (
+    <Layout>
+      {/* Hero Section with Carousel */}
+      <section className="relative pt-12 pb-20 md:py-20 px-4 overflow-hidden min-h-[500px] flex items-center">
+        <Slider {...settings} className="w-full">
+          {slides.map((slide, index) => (
+            <div key={index} className="relative w-full h-full" style={{
+              height: '500px',
+              ...(slide.background ? { background: slide.background } : {}),
+              ...(slide.backgroundImage ? { backgroundImage: `url(${slide.backgroundImage})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}),
+            }}>
+              <div className="container mx-auto relative z-10 h-full flex items-center">
+                {slide.content}
+              </div>
+            </div>
+          ))}
+        </Slider>
       </section>
 
       {/* Categories Section */}

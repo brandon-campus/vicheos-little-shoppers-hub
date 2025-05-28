@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -81,3 +80,43 @@
 .hover-scale {
   @apply transition-transform duration-200 hover:scale-105;
 }
+
+/* Custom styles for react-slick arrows */
+.slick-prev,
+.slick-next {
+  width: 40px !important; /* Adjust size as needed */
+  height: 40px !important; /* Adjust size as needed */
+  z-index: 1; /* Ensure arrows are above content */
+}
+
+.slick-prev:before,
+.slick-next:before {
+  font-size: 24px !important; /* Adjust icon size */
+  color: #333; /* Adjust color as needed */
+  opacity: 1 !important; /* Ensure icon is visible */
+}
+
+.slick-prev {
+  left: 10px !important; /* Adjust position */
+}
+
+.slick-next {
+  right: 10px !important; /* Adjust position */
+}
+
+/* Optional: Add background and border to make them circular */
+.slick-prev,
+.slick-next {
+  background-color: rgba(255, 255, 255, 0.8); /* Light background with transparency */
+  border-radius: 50%; /* Make them circular */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Add a subtle shadow */
+}
+
+/* Optional: Adjust arrow color on hover */
+.slick-prev:hover:before,
+.slick-next:hover:before {
+  color: #000; /* Darker color on hover */
+}
+
+/* You might need to add more specific styles to override default slick-theme.css */
+/* For example, you might need to target .slick-prev.slick-disabled:before */

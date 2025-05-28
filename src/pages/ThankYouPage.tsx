@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { CheckCircle, Download, Home, ShoppingBag, WhatsappIcon } from "lucide-react";
+import { CheckCircle, Download, Home, ShoppingBag } from "lucide-react";
 import { toast } from "sonner";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Menu, X, ShoppingCart, Search } from "lucide-react";
@@ -28,11 +27,7 @@ const Header = () => {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center">
-            <span className="text-2xl font-bold text-gray-800">
-              <span className="text-[#D3E4FD]">Vi</span>
-              <span className="text-[#FEC6A1]">che</span>
-              <span className="text-gray-700">os</span>
-            </span>
+            <img src="/img/bicheoslogo.png" alt="Vicheos Logo" className="h-10" />
           </Link>
 
           {/* Desktop Navigation */}
