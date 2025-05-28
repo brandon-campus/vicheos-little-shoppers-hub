@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Mail, Phone, MapPin, Clock } from "lucide-react";
 import { toast } from "sonner";
@@ -113,7 +112,7 @@ const ContactPage = () => {
                   </div>
                   <div>
                     <h3 className="font-medium text-gray-800">Dirección</h3>
-                    <p className="text-gray-600">Avenida Principal 123, 28001, Madrid, España</p>
+                    <p className="text-gray-600">Arequipa, Perú</p>
                   </div>
                 </div>
                 
@@ -123,7 +122,7 @@ const ContactPage = () => {
                   </div>
                   <div>
                     <h3 className="font-medium text-gray-800">Teléfono</h3>
-                    <p className="text-gray-600">+34 912 345 678</p>
+                    <p className="text-gray-600">+51 947 154 677</p>
                   </div>
                 </div>
                 
@@ -133,7 +132,7 @@ const ContactPage = () => {
                   </div>
                   <div>
                     <h3 className="font-medium text-gray-800">Email</h3>
-                    <p className="text-gray-600">info@vicheos.com</p>
+                    <p className="text-gray-600">bicheosb@gmail.com</p>
                   </div>
                 </div>
                 
@@ -153,7 +152,7 @@ const ContactPage = () => {
             {/* Map (placeholder) */}
             <div className="bg-white rounded-2xl shadow-sm overflow-hidden h-64">
               <iframe 
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d194347.38440858177!2d-3.819064!3d40.4378693!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd422997800a3c81%3A0xc436dec1618c2269!2sMadrid%2C%20Espa%C3%B1a!5e0!3m2!1ses!2ses!4v1653310321544!5m2!1ses!2ses" 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3873.540401944049!2d-71.54083438529815!3d-16.40904794347416!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9149038203152483%3A0x4e026f9b2e485a51!2sArequipa%2C%20Per%C3%BA!5e0!3m2!1ses!2ses!4v1678800000000!5m2!1ses!2ses" 
                 width="100%" 
                 height="100%" 
                 style={{ border: 0 }} 

@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 import { Facebook, Instagram, Twitter, Send } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -11,11 +10,11 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Brand & Description */}
           <div>
-            <h3 className="text-2xl font-bold mb-4">
-              <span className="text-[#D3E4FD]">Vi</span>
-              <span className="text-[#FEC6A1]">che</span>
-              <span className="text-gray-700">os</span>
-            </h3>
+            <img
+              src="/img/bicheoslogo.png"
+              alt="Vicheos Logo"
+              className="h-10 mb-4"
+            />
             <p className="mb-4">
               Productos electrónicos innovadores para bebés, diseñados especialmente para mamás primerizas.
             </p>
@@ -68,10 +67,9 @@ const Footer = () => {
           <div>
             <h4 className="text-lg font-semibold mb-4">Contacto</h4>
             <address className="not-italic">
-              <p className="mb-2">Avenida Principal 123</p>
-              <p className="mb-2">Madrid, España</p>
-              <p className="mb-2">Email: info@vicheos.com</p>
-              <p>Teléfono: +34 912 345 678</p>
+              <p className="mb-2">Arequipa, Perú</p>
+              <p className="mb-2">Email: bicheosb@gmail.com</p>
+              <p>Teléfono: +51 947 154 677</p>
             </address>
           </div>
 

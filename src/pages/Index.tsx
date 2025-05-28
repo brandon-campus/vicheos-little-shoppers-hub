@@ -299,7 +299,7 @@ const Index = () => {
                 <Package className="text-gray-800" size={24} />
               </div>
               <h3 className="font-semibold text-gray-800 mb-2">{benefits[0].title}</h3>
-              <p className="text-gray-600">{benefits[0].description}</p>
+              <p className="text-gray-600">En todos los pedidos superiores a 200 soles</p>
             </div>
             
             <div className="bg-white p-6 rounded-2xl shadow-sm hover:shadow-md transition-shadow text-center animate-fade-in">
