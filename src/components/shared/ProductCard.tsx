@@ -34,6 +34,14 @@ const ProductCard = ({
     }).format(amount);
   };
 
+  const handleWhatsAppClick = (e: React.MouseEvent, productName: string) => {
+    e.preventDefault();
+    const whatsappNumber = "51947154677";
+    const message = `Hola, quisiera obtener más información sobre el producto ${productName}`;
+    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+  };
+
   return (
     <div className="group relative bg-white rounded-2xl shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md animate-fade-in">
       {/* Badges */}
@@ -91,16 +99,16 @@ const ProductCard = ({
             variant="outline"
             size="sm"
             className="flex-1 border-[#D3E4FD] text-gray-700 hover:bg-[#D3E4FD] hover:text-gray-800"
+            asChild
           >
-            <ShoppingCart size={16} className="mr-2" />
-            Añadir
+            <Link to={`/producto/${id}`}>Ver más</Link>
           </Button>
           <Button
             size="sm"
             className="flex-1 bg-[#FEC6A1] text-gray-800 hover:bg-[#f9b789]"
             asChild
           >
-            <Link to={`/producto/${id}`}>Ver más</Link>
+            <Link to={`/producto/${id}`}>Comprar Ahora</Link>
           </Button>
         </div>
       </div>

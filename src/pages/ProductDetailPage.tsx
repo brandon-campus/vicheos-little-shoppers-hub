@@ -94,6 +94,14 @@ const ProductDetailPage = () => {
     }
   };
   
+  // Añadir esta función para manejar el enlace de WhatsApp
+  const handleWhatsAppClick = () => {
+    const whatsappNumber = "51947154677";
+    const message = `Hola, quisiera obtener más información sobre el producto ${product.name}`;
+    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+  };
+  
   // For demo purposes, we'll use the main image multiple times for the gallery
   const galleryImages = [
     product.image,
@@ -238,21 +246,20 @@ const ProductDetailPage = () => {
               </div>
             </div>
             
-            {/* Action Buttons - Both redirect to Tally form */}
+            {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 mb-8">
               <Button
-                onClick={handleAddToCart} // Use handleAddToCart which now redirects
+                onClick={handleBuyNow}
+                className="flex-1 bg-[#FEC6A1] hover:bg-[#f9b789] text-gray-800 text-lg py-6"
+              >
+                Comprar Ahora
+              </Button>
+              <Button
+                onClick={handleWhatsAppClick}
                 variant="outline"
                 className="flex-1 border-[#D3E4FD] hover:bg-[#D3E4FD] text-gray-800 text-lg py-6"
               >
-                <ShoppingCart size={20} className="mr-2" />
-                Comprar (Formulario)
-              </Button>
-              <Button
-                onClick={handleBuyNow} // Use handleBuyNow which now redirects
-                className="flex-1 bg-[#FEC6A1] hover:bg-[#f9b789] text-gray-800 text-lg py-6"
-              >
-                Comprar ahora (Formulario)
+                Consultar por WhatsApp
               </Button>
             </div>
             
