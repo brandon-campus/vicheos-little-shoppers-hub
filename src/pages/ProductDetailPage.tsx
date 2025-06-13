@@ -102,13 +102,8 @@ const ProductDetailPage = () => {
     window.open(whatsappUrl, '_blank');
   };
   
-  // For demo purposes, we'll use the main image multiple times for the gallery
-  const galleryImages = [
-    product.image,
-    product.image.replace("auto=format", "auto=format&q=80"),
-    product.image.replace("auto=format", "auto=format&q=70"),
-    product.image.replace("auto=format", "auto=format&q=60"),
-  ];
+  // Usar la galería real del producto
+  const galleryImages = product.gallery || [product.image];
   
   return (
     <Layout>
