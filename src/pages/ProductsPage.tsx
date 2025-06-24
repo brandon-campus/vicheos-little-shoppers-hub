@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Filter, SlidersHorizontal } from "lucide-react";
@@ -8,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { products, categories } from "@/data/mockData";
+import SEO from "@/components/shared/SEO";
 
 const ProductsPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -15,11 +15,24 @@ const ProductsPage = () => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   
   const categoryParam = searchParams.get("categoria");
+  const searchParam = searchParams.get("buscar");
   const sortParam = searchParams.get("ordenar") || "destacados";
   
   // Filter products based on URL parameters
   useEffect(() => {
     let result = [...products];
+    
+    // Filter by search query if specified
+    if (searchParam) {
+      const searchLower = searchParam.toLowerCase();
+      result = result.filter(product => 
+        product.name.toLowerCase().includes(searchLower) ||
+        product.description.toLowerCase().includes(searchLower) ||
+        product.features.some(feature => 
+          feature.toLowerCase().includes(searchLower)
+        )
+      );
+    }
     
     // Filter by category if specified
     if (categoryParam) {
@@ -46,7 +59,7 @@ const ProductsPage = () => {
     }
     
     setFilteredProducts(result);
-  }, [categoryParam, sortParam]);
+  }, [categoryParam, searchParam, sortParam]);
   
   // Handle sort change
   const handleSortChange = (value: string) => {
@@ -68,6 +81,13 @@ const ProductsPage = () => {
     setSearchParams(params);
   };
   
+  // Clear search
+  const clearSearch = () => {
+    const params = new URLSearchParams(searchParams);
+    params.delete("buscar");
+    setSearchParams(params);
+  };
+  
   // Toggle filter sidebar on mobile
   const toggleFilter = () => {
     setIsFilterOpen(!isFilterOpen);
@@ -75,8 +95,28 @@ const ProductsPage = () => {
   
   return (
     <Layout>
+      <SEO 
+        title="Productos - Bicheos | Productos electrónicos para bebés"
+        description="Explora nuestra colección completa de productos electrónicos para bebés. Encuentra juguetes, dispositivos de seguridad y más en Bicheos."
+        keywords="productos bebés, juguetes electrónicos, dispositivos bebés, seguridad infantil, Bicheos productos"
+        url="https://bicheos.com/productos"
+      />
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-semibold text-gray-800 mb-8">Nuestros Productos</h1>
+        <h1 className="text-3xl font-semibold text-gray-800 mb-8">
+          {searchParam ? `Resultados para: "${searchParam}"` : "Nuestros Productos"}
+        </h1>
+        
+        {searchParam && (
+          <div className="mb-6">
+            <Button 
+              variant="outline" 
+              onClick={clearSearch}
+              className="border-[#D3E4FD] hover:bg-[#D3E4FD] text-gray-800"
+            >
+              Limpiar búsqueda
+            </Button>
+          </div>
+        )}
         
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Mobile Filter Toggle */}

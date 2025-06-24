@@ -4,15 +4,15 @@ import { Button } from "@/components/ui/button";
 import Layout from "@/components/layout/Layout";
 import ProductCard from "@/components/shared/ProductCard";
 import CategoryCard from "@/components/shared/CategoryCard";
-import TestimonialCard from "@/components/shared/TestimonialCard";
 import NewsletterForm from "@/components/shared/NewsletterForm";
-import { products, categories, testimonials, benefits } from "@/data/mockData";
+import { products, categories, benefits } from "@/data/mockData";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft } from 'lucide-react';
 import { Megaphone } from "lucide-react";
+import SEO from "@/components/shared/SEO";
 
 interface Slide {
   background?: string;
@@ -25,13 +25,13 @@ interface Slide {
 const heroSlides = [
   {
     id: 1,
-    title: 'Hasta 40% OFF',
-    subtitle: 'en Electrónica para bebés',
-    description: 'Productos seleccionados • Garantía oficial • Stock limitado',
+    title: 'Tecnología para el cuidado de tu bebé',
+    subtitle: '',
+    description: 'Productos para padres que buscan lo mejor para sus hijos.',
     image: '/img/bicheoscol.jpg',
-    buttonText: 'Ver ofertas',
-    background: 'bg-gradient-to-r from-[#F6A623] via-[#FFD580] to-[#FEC6A1]',
-    badge: 'OFERTA',
+    buttonText: 'Ver productos',
+    background: 'bg-gradient-to-r from-[#F6A623] to-[#FF8C5A]',
+    badge: 'Novedades',
     badgeColor: 'bg-[#D9E4EA] text-[#2A4263]',
   },
   {
@@ -41,19 +41,19 @@ const heroSlides = [
     description: 'Rápido • Seguro • A todo el país',
     image: '/img/paseo.jpg',
     buttonText: 'Ver productos',
-    background: 'bg-gradient-to-r from-[#4BC0F1] via-[#D9E4EA] to-[#A0E7E5]',
+    background: 'bg-gradient-to-r from-[#4BC0F1] to-[#A0E7E5]',
     badge: 'GRATIS',
     badgeColor: 'bg-[#D9E4EA] text-[#2A4263]',
   },
   {
     id: 3,
-    title: '¡12 cuotas sin interés!',
-    subtitle: 'Pagá fácil y seguro',
-    description: 'Tarjetas seleccionadas • Sin recargo • 100% online',
-    image: '/img/Productos electrónicos.png',
+    title: '¡Paga con Yape!',
+    subtitle: 'Pago fácil y seguro',
+    description: 'Sin recargo • 100% online',
+    image: '/img/yapess.png',
     buttonText: 'Ver más',
-    background: 'bg-gradient-to-r from-[#F6A623] via-[#FEC6A1] to-[#F1F0FB]',
-    badge: '12 CUOTAS',
+    background: 'bg-gradient-to-r from-[#F6A623] to-[#FFD580]',
+    badge: 'ONLINE',
     badgeColor: 'bg-[#D9E4EA] text-[#2A4263]',
   },
 ];
@@ -242,19 +242,22 @@ const Index = () => {
 
   return (
     <Layout>
+      <SEO 
+        title="Bicheos - Productos electrónicos innovadores para bebés"
+        description="Descubre productos electrónicos innovadores para bebés en Bicheos. Especialmente diseñados para mamás primerizas. Envío gratis y garantía de calidad."
+        keywords="productos para bebés, electrónicos bebés, juguetes bebés, mamás primerizas, cuidado infantil, Bicheos"
+        url="https://bicheos.com"
+      />
       <HeroSlider />
 
       {/* Categories Section */}
       <section className="py-12 px-4 bg-[#F1F0FB]">
         <div className="container mx-auto">
           <div className="text-center mb-10">
-            <h2 className="text-3xl font-semibold text-gray-800 mb-2">Categorías Destacadas</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              Descubre nuestra amplia gama de productos organizados por categorías para encontrar lo que necesitas más fácilmente.
-            </p>
+            <h2 className="text-3xl font-semibold text-gray-800 mb-2">Encuentra tu Bicheo ideal</h2>
           </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {featuredCategories.map((category) => (
               <CategoryCard
                 key={category.id}
@@ -285,10 +288,7 @@ const Index = () => {
       <section className="py-12 px-4">
         <div className="container mx-auto">
           <div className="text-center mb-10">
-            <h2 className="text-3xl font-semibold text-gray-800 mb-2">Productos Destacados</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              Los productos más populares seleccionados para facilitar el cuidado de tu bebé con la última tecnología.
-            </p>
+            <h2 className="text-3xl font-semibold text-gray-800 mb-2">Nuestros Bicheos 😎</h2>
           </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -326,9 +326,6 @@ const Index = () => {
         <div className="container mx-auto">
           <div className="text-center mb-10">
             <h2 className="text-3xl font-semibold text-gray-800 mb-2">¿Por qué elegirnos?</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              Nos comprometemos a ofrecerte la mejor experiencia de compra para los productos de tu bebé.
-            </p>
           </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -337,7 +334,7 @@ const Index = () => {
                 <Package className="text-gray-800" size={24} />
               </div>
               <h3 className="font-semibold text-gray-800 mb-2">{benefits[0].title}</h3>
-              <p className="text-gray-600">En todos los pedidos superiores a 200 soles</p>
+              <p className="text-gray-600">En todos los pedidos superiores a 500 soles</p>
             </div>
             
             <div className="bg-white p-6 rounded-2xl shadow-sm hover:shadow-md transition-shadow text-center animate-fade-in">
@@ -363,31 +360,6 @@ const Index = () => {
               <h3 className="font-semibold text-gray-800 mb-2">{benefits[3].title}</h3>
               <p className="text-gray-600">{benefits[3].description}</p>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials Section */}
-      <section className="py-12 px-4">
-        <div className="container mx-auto">
-          <div className="text-center mb-10">
-            <h2 className="text-3xl font-semibold text-gray-800 mb-2">Lo que dicen nuestras clientas</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              Descubre por qué las mamás confían en Vicheos para los productos tecnológicos de sus bebés.
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {testimonials.map((testimonial) => (
-              <TestimonialCard
-                key={testimonial.id}
-                name={testimonial.name}
-                image={testimonial.image}
-                comment={testimonial.comment}
-                rating={testimonial.rating}
-                date={testimonial.date}
-              />
-            ))}
           </div>
         </div>
       </section>

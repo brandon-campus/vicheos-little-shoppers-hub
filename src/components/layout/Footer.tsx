@@ -51,13 +51,13 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/ofertas" className="hover:text-gray-900 transition-colors">
-                  Ofertas
+                <Link to="/contacto" className="hover:text-gray-900 transition-colors">
+                  Contacto
                 </Link>
               </li>
               <li>
-                <Link to="/contacto" className="hover:text-gray-900 transition-colors">
-                  Contacto
+                <Link to="/libro-reclamaciones" className="hover:text-gray-900 transition-colors">
+                  Libro de Reclamaciones
                 </Link>
               </li>
             </ul>
@@ -95,7 +95,7 @@ const Footer = () => {
 
         <div className="border-t border-gray-200 mt-8 pt-6 text-center">
           <p className="text-sm">
-            &copy; {new Date().getFullYear()} Vicheos. Todos los derechos reservados.
+            &copy; {new Date().getFullYear()} Bicheos. Todos los derechos reservados.
           </p>
         </div>
       </div>

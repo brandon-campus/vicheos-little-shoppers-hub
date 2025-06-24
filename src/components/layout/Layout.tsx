@@ -2,6 +2,7 @@ import { ReactNode } from "react";
 import Header from "./Header";
 import Footer from "./Footer";
 import BackToTop from "@/components/ui/BackToTop";
+import WhatsAppButton from "@/components/shared/WhatsAppButton";
 import { Megaphone } from "lucide-react";
 
 interface LayoutProps {
@@ -17,11 +18,12 @@ const Layout = ({ children }: LayoutProps) => {
           <Megaphone className="w-5 h-5" />
           20% OFF en tu primera compra
         </div>
-        <Header />
+      <Header />
       </div>
       <main className="flex-1 bg-[#f1f0fb]">{children}</main>
       <Footer />
       <BackToTop />
+      <WhatsAppButton />
     </div>
   );
 };

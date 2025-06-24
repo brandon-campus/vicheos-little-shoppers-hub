@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import SEO from "@/components/shared/SEO";
 
 const ContactPage = () => {
   const [formData, setFormData] = useState({
@@ -41,6 +42,12 @@ const ContactPage = () => {
 
   return (
     <Layout>
+      <SEO 
+        title="Contacto - Bicheos | Estamos aquí para ayudarte"
+        description="Contáctanos para más información sobre nuestros productos para bebés. Atención personalizada y soporte técnico disponible."
+        keywords="contacto Bicheos, soporte bebés, atención al cliente, productos bebés, ayuda Bicheos"
+        url="https://bicheos.com/contacto"
+      />
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-semibold text-gray-800 mb-8">Contacto</h1>
         
