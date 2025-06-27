@@ -6,19 +6,35 @@ import ProductCard from "@/components/shared/ProductCard";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
-import { products, categories } from "@/data/mockData";
+import { categories } from "@/data/mockData";
 import SEO from "@/components/shared/SEO";
+import { supabase } from "@/lib/supabaseClient";
 
 const ProductsPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [filteredProducts, setFilteredProducts] = useState(products);
+  const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
   
   const categoryParam = searchParams.get("categoria");
   const searchParam = searchParams.get("buscar");
   const sortParam = searchParams.get("ordenar") || "destacados";
   
-  // Filter products based on URL parameters
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const { data, error } = await supabase.from("productos").select("*");
+      if (error) {
+        console.error("Error al obtener productos:", error);
+        setProducts([]);
+      } else {
+        setProducts(data);
+      }
+      setLoading(false);
+    };
+    fetchProducts();
+  }, []);
+  
   useEffect(() => {
     let result = [...products];
     
@@ -27,16 +43,13 @@ const ProductsPage = () => {
       const searchLower = searchParam.toLowerCase();
       result = result.filter(product => 
         product.name.toLowerCase().includes(searchLower) ||
-        product.description.toLowerCase().includes(searchLower) ||
-        product.features.some(feature => 
-          feature.toLowerCase().includes(searchLower)
-        )
+        (product.description && product.description.toLowerCase().includes(searchLower))
       );
     }
     
     // Filter by category if specified
     if (categoryParam) {
-      result = result.filter(product => product.category === parseInt(categoryParam));
+      result = result.filter(product => product.category === categoryParam);
     }
     
     // Sort products
@@ -59,7 +72,7 @@ const ProductsPage = () => {
     }
     
     setFilteredProducts(result);
-  }, [categoryParam, searchParam, sortParam]);
+  }, [products, categoryParam, searchParam, sortParam]);
   
   // Handle sort change
   const handleSortChange = (value: string) => {

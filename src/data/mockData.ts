@@ -1,3 +1,5 @@
+import { supabase } from "@/lib/supabaseClient";
+
 export const products = [
   {
     id: 105,

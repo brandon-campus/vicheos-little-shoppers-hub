@@ -5,7 +5,7 @@ import Layout from "@/components/layout/Layout";
 import ProductCard from "@/components/shared/ProductCard";
 import CategoryCard from "@/components/shared/CategoryCard";
 import NewsletterForm from "@/components/shared/NewsletterForm";
-import { products, categories, benefits } from "@/data/mockData";
+import { categories, benefits } from "@/data/mockData";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -13,6 +13,7 @@ import React, { useState, useEffect } from 'react';
 import { ChevronLeft } from 'lucide-react';
 import { Megaphone } from "lucide-react";
 import SEO from "@/components/shared/SEO";
+import { supabase } from "@/lib/supabaseClient";
 
 interface Slide {
   background?: string;
@@ -155,8 +156,23 @@ const HeroSlider = () => {
 };
 
 const Index = () => {
-  const featuredProducts = products.slice(0, 4);
+  const [products, setProducts] = useState([]);
   const featuredCategories = categories.slice(0, 4);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const { data, error } = await supabase.from("productos").select("*");
+      if (error) {
+        console.error("Error al obtener productos:", error);
+        setProducts([]);
+      } else {
+        setProducts(data);
+      }
+    };
+    fetchProducts();
+  }, []);
+
+  const featuredProducts = products.slice(0, 4);
 
   const settings = {
     dots: true,

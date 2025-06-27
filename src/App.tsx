@@ -15,6 +15,11 @@ import CheckoutPage from "./pages/CheckoutPage";
 import ThankYouPage from "./pages/ThankYouPage";
 import LibroReclamacionesPage from "./pages/LibroReclamacionesPage";
 import NotFound from "./pages/NotFound";
+import AdminLoginPage from "./pages/AdminLoginPage";
+import AdminDashboardPage from "./pages/AdminDashboardPage";
+import AdminProductsPage from "./pages/AdminProductsPage";
+import AdminCategoriasPage from "./pages/AdminCategoriasPage";
+import AdminContactosPage from "./pages/AdminContactosPage";
 
 const queryClient = new QueryClient();
 
@@ -36,6 +41,11 @@ const App = () => (
             <Route path="/checkout" element={<CheckoutPage />} />
             <Route path="/gracias" element={<ThankYouPage />} />
             <Route path="/libro-reclamaciones" element={<LibroReclamacionesPage />} />
+            <Route path="/admin-login" element={<AdminLoginPage />} />
+            <Route path="/admin" element={<AdminDashboardPage />} />
+            <Route path="/admin-products" element={<AdminProductsPage />} />
+            <Route path="/admin-categorias" element={<AdminCategoriasPage />} />
+            <Route path="/admin-contactos" element={<AdminContactosPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

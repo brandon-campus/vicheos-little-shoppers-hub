@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import SEO from "@/components/shared/SEO";
+import { supabase } from "@/lib/supabaseClient";
 
 const ContactPage = () => {
   const [formData, setFormData] = useState({
@@ -21,10 +22,9 @@ const ContactPage = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Simple validation
     if (!formData.name || !formData.email || !formData.message) {
       toast.error("Por favor, completa todos los campos");
       return;
@@ -32,12 +32,16 @@ const ContactPage = () => {
     
     setIsSubmitting(true);
     
-    // Simulate API call
-    setTimeout(() => {
+    const { error } = await supabase.from("contactos").insert([formData]);
+
+    if (error) {
+      console.error("Error Supabase:", error);
+      toast.error("Hubo un error al enviar tu mensaje. Intenta nuevamente.");
+    } else {
       toast.success("¡Gracias por tu mensaje! Te responderemos pronto.");
       setFormData({ name: "", email: "", message: "" });
-      setIsSubmitting(false);
-    }, 1000);
+    }
+    setIsSubmitting(false);
   };
 
   return (

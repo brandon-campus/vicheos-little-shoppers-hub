@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { 
   Star, 
@@ -15,21 +15,45 @@ import Layout from "@/components/layout/Layout";
 import ProductCard from "@/components/shared/ProductCard";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { products } from "@/data/mockData";
+import { supabase } from "@/lib/supabaseClient";
 
 const ProductDetailPage = () => {
   const { id } = useParams<{ id: string }>();
+  const [product, setProduct] = useState(null);
+  const [relatedProducts, setRelatedProducts] = useState([]);
   const [quantity, setQuantity] = useState(1);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [loading, setLoading] = useState(true);
   
-  // Find the product by ID
-  const product = products.find(p => p.id === parseInt(id || "0"));
+  useEffect(() => {
+    const fetchProduct = async () => {
+      const { data, error } = await supabase.from("productos").select("*").eq("id", id).single();
+      if (error) {
+        setProduct(null);
+      } else {
+        // Convierte gallery y features a array si vienen como string
+        const fixedData = {
+          ...data,
+          gallery: typeof data.gallery === "string" ? data.gallery.split("|") : data.gallery,
+          features: typeof data.features === "string" ? data.features.split("|") : data.features,
+        };
+        setProduct(fixedData);
+      }
+      setLoading(false);
+    };
+    fetchProduct();
+  }, [id]);
+
+  useEffect(() => {
+    if (product && product.category) {
+      const fetchRelated = async () => {
+        const { data, error } = await supabase.from("productos").select("*").eq("category", product.category).neq("id", id).limit(4);
+        if (!error) setRelatedProducts(data);
+      };
+      fetchRelated();
+    }
+  }, [product, id]);
   
-  // Get related products (same category)
-  const relatedProducts = product 
-    ? products.filter(p => p.category === product.category && p.id !== product.id).slice(0, 4)
-    : [];
-    
   if (!product) {
     return (
       <Layout>
@@ -315,7 +339,6 @@ const ProductDetailPage = () => {
                   isNew={relatedProduct.isNew}
                   isOffer={relatedProduct.isOffer}
                   discountPercentage={relatedProduct.discountPercentage}
-                  tallyFormUrl={relatedProduct.tallyFormUrl}
                 />
               ))}
             </div>
