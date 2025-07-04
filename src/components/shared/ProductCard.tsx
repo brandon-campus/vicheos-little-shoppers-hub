@@ -1,7 +1,8 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useCart } from "@/CartContext";
 
 export interface ProductProps {
   id: number;
@@ -32,6 +33,35 @@ const ProductCard = ({
       style: "currency",
       currency: "PEN",
     }).format(amount);
+  };
+
+  const { addToCart } = useCart();
+  const navigate = useNavigate();
+
+  const handleAddToCart = () => {
+    addToCart({
+      id,
+      name,
+      price: discountedPrice,
+      image,
+      quantity: 1,
+      isOffer,
+      discountPercentage,
+    });
+    // No mostrar toast, el feedback es el mini cart
+  };
+
+  const handleBuyNow = () => {
+    addToCart({
+      id,
+      name,
+      price: discountedPrice,
+      image,
+      quantity: 1,
+      isOffer,
+      discountPercentage,
+    });
+    navigate("/carrito");
   };
 
   const handleWhatsAppClick = (e: React.MouseEvent, productName: string) => {
@@ -96,19 +126,20 @@ const ProductCard = ({
 
         <div className="flex space-x-2">
           <Button
+            size="sm"
+            className="flex-1 bg-[#FEC6A1] text-gray-800 hover:bg-[#f9b789] font-semibold"
+            onClick={handleAddToCart}
+          >
+            <ShoppingCart className="w-4 h-4 mr-1" />
+            Añadir al carrito
+          </Button>
+          <Button
             variant="outline"
             size="sm"
             className="flex-1 border-[#D3E4FD] text-gray-700 hover:bg-[#D3E4FD] hover:text-gray-800"
             asChild
           >
             <Link to={`/producto/${id}`}>Ver más</Link>
-          </Button>
-          <Button
-            size="sm"
-            className="flex-1 bg-[#FEC6A1] text-gray-800 hover:bg-[#f9b789]"
-            asChild
-          >
-            <Link to={`/producto/${id}`}>Comprar Ahora</Link>
           </Button>
         </div>
       </div>

@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { supabase } from "@/lib/supabaseClient";
 
 interface ReclamoForm {
   tipoDocumento: string;
@@ -47,13 +48,36 @@ const LibroReclamacionesPage = () => {
     setSubmitStatus('idle');
     
     try {
-      // Simular envío del formulario
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      console.log('Datos del reclamo:', data);
-      setSubmitStatus('success');
-      reset();
+      // Insertar en Supabase
+      const { error } = await supabase
+        .from('reclamos')
+        .insert([{
+          tipo_documento: data.tipoDocumento,
+          numero_documento: data.numeroDocumento,
+          nombres: data.nombres,
+          apellidos: data.apellidos,
+          email: data.email,
+          telefono: data.telefono,
+          direccion: data.direccion,
+          departamento: data.departamento,
+          provincia: data.provincia,
+          distrito: data.distrito,
+          tipo_reclamo: data.tipoReclamo,
+          descripcion: data.descripcion,
+          pedido: data.pedido,
+          monto: data.monto,
+          fecha_compra: data.fechaCompra
+        }]);
+
+      if (error) {
+        console.error('Error al guardar reclamo:', error);
+        setSubmitStatus('error');
+      } else {
+        setSubmitStatus('success');
+        reset();
+      }
     } catch (error) {
+      console.error('Error:', error);
       setSubmitStatus('error');
     } finally {
       setIsSubmitting(false);
@@ -231,16 +255,13 @@ const LibroReclamacionesPage = () => {
                     )}
                   </div>
                   
-                  <div>
-                    <Label htmlFor="direccion">Dirección Completa *</Label>
+                  <div className="md:col-span-2">
+                    <Label htmlFor="direccion">Dirección</Label>
                     <Input
                       id="direccion"
-                      {...register('direccion', { required: 'Este campo es obligatorio' })}
-                      placeholder="Calle, número, referencia"
+                      {...register('direccion')}
+                      placeholder="Ingresa tu dirección completa"
                     />
-                    {errors.direccion && (
-                      <p className="text-red-500 text-sm mt-1">{errors.direccion.message}</p>
-                    )}
                   </div>
                 </div>
               </div>

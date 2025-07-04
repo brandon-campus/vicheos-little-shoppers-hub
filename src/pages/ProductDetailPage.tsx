@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { 
   Star, 
   ShoppingCart, 
@@ -16,6 +16,7 @@ import ProductCard from "@/components/shared/ProductCard";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/lib/supabaseClient";
+import { useCart } from "@/CartContext";
 
 const ProductDetailPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -24,6 +25,8 @@ const ProductDetailPage = () => {
   const [quantity, setQuantity] = useState(1);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [loading, setLoading] = useState(true);
+  const { addToCart } = useCart();
+  const navigate = useNavigate();
   
   useEffect(() => {
     const fetchProduct = async () => {
@@ -100,22 +103,30 @@ const ProductDetailPage = () => {
   
   // Handle add to cart - now redirects to Tally form
   const handleAddToCart = () => {
-    if (product.tallyFormUrl) {
-      window.location.href = product.tallyFormUrl;
-    } else {
-      // Fallback or show an error if no Tally form URL is available
-      toast.error("No hay un formulario de compra disponible para este producto.");
-    }
+    addToCart({
+      id: product.id,
+      name: product.name,
+      price: discountedPrice,
+      image: product.image,
+      quantity,
+      isOffer: product.isOffer,
+      discountPercentage: product.discountPercentage,
+    });
+    // No mostrar toast, el feedback es el mini cart
   };
   
   // Handle buy now - also redirects to Tally form
   const handleBuyNow = () => {
-    if (product.tallyFormUrl) {
-       window.location.href = product.tallyFormUrl;
-    } else {
-      // Fallback or show an error if no Tally form URL is available
-      toast.error("No hay un formulario de compra disponible para este producto.");
-    }
+    addToCart({
+      id: product.id,
+      name: product.name,
+      price: discountedPrice,
+      image: product.image,
+      quantity,
+      isOffer: product.isOffer,
+      discountPercentage: product.discountPercentage,
+    });
+    navigate("/carrito");
   };
   
   // Añadir esta función para manejar el enlace de WhatsApp
@@ -272,6 +283,14 @@ const ProductDetailPage = () => {
                 className="flex-1 bg-[#FEC6A1] hover:bg-[#f9b789] text-gray-800 text-lg py-6"
               >
                 Comprar Ahora
+              </Button>
+              <Button
+                onClick={handleAddToCart}
+                variant="outline"
+                className="flex-1 border-[#D3E4FD] hover:bg-[#D3E4FD] text-gray-800 text-lg py-6"
+              >
+                <ShoppingCart className="w-5 h-5 mr-2" />
+                Agregar al carrito
               </Button>
               <Button
                 onClick={handleWhatsAppClick}

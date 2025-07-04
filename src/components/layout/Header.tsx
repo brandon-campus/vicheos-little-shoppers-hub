@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Menu, X, Search } from "lucide-react";
+import { Menu, X, Search, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { products } from "@/data/mockData";
+import { useCart } from "@/CartContext";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -14,6 +15,23 @@ const Header = () => {
   const [selectedSuggestion, setSelectedSuggestion] = useState(-1);
   const navigate = useNavigate();
   const searchRef = useRef<HTMLDivElement>(null);
+  const { cart, showMiniCart, setShowMiniCart } = useCart();
+  const [cartBounce, setCartBounce] = useState(false);
+
+  useEffect(() => {
+    if (cart.length > 0) {
+      setCartBounce(true);
+      const timeout = setTimeout(() => setCartBounce(false), 600);
+      return () => clearTimeout(timeout);
+    }
+  }, [cart.length]);
+
+  useEffect(() => {
+    if (showMiniCart) {
+      const timeout = setTimeout(() => setShowMiniCart(false), 2500);
+      return () => clearTimeout(timeout);
+    }
+  }, [showMiniCart, setShowMiniCart]);
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const toggleSearch = () => setIsSearchOpen(!isSearchOpen);
@@ -168,6 +186,17 @@ const Header = () => {
             >
               <Search size={20} />
             </button>
+            <Link to="/carrito" className="relative">
+              <ShoppingCart
+                size={28}
+                className={`text-gray-600 hover:text-[#FEC6A1] transition-all duration-300 ${cartBounce ? 'animate-bounce-cart' : ''}`}
+              />
+              {cart.length > 0 && (
+                <span className="absolute -top-2 -right-2 bg-[#FEC6A1] text-gray-800 rounded-full px-2 py-0.5 text-xs font-bold shadow">
+                  {cart.reduce((sum, item) => sum + item.quantity, 0)}
+                </span>
+              )}
+            </Link>
             <button
               onClick={toggleMenu}
               className="p-1 text-gray-600 hover:text-gray-900 transition-colors md:hidden"
@@ -244,6 +273,35 @@ const Header = () => {
       <div className="w-full bg-[#FEF3DE] text-[#000] text-center flex items-center justify-center gap-2 h-10 font-bold text-base tracking-wide shadow-sm">
         ¡Envío gratis en compras desde S/500!
       </div>
+
+    {/* MiniCart flotante */}
+    {showMiniCart && cart.length > 0 && (
+      <div className="fixed top-20 right-4 z-[100] bg-white border border-[#D3E4FD] rounded-2xl shadow-xl p-4 w-80 animate-fade-in flex flex-col gap-2">
+        <div className="flex justify-between items-center mb-2">
+          <span className="font-semibold text-gray-800">Producto añadido al carrito</span>
+          <button onClick={() => setShowMiniCart(false)} className="text-gray-400 hover:text-gray-700 text-xl">&times;</button>
+        </div>
+        <div className="divide-y divide-gray-100 max-h-40 overflow-y-auto">
+          {cart.map((item) => (
+            <div key={item.id} className="flex items-center py-2 gap-3">
+              <img src={item.image} alt={item.name} className="w-12 h-12 rounded-lg object-cover border" />
+              <div className="flex-1">
+                <div className="font-medium text-gray-800 text-sm line-clamp-1">{item.name}</div>
+                <div className="text-xs text-gray-500">Cantidad: {item.quantity}</div>
+              </div>
+              <div className="font-semibold text-gray-800 text-sm">S/ {item.price * item.quantity}</div>
+            </div>
+          ))}
+        </div>
+        <div className="flex justify-between items-center mt-2">
+          <span className="font-semibold text-gray-800">Total:</span>
+          <span className="font-bold text-[#2563eb]">S/ {cart.reduce((sum, item) => sum + item.price * item.quantity, 0)}</span>
+        </div>
+        <Link to="/carrito">
+          <Button className="w-full mt-2 bg-[#FEC6A1] text-gray-800 hover:bg-[#f9b789]">Ir al carrito</Button>
+        </Link>
+      </div>
+    )}
     </>
   );
 };

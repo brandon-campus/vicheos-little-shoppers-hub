@@ -1,53 +1,31 @@
-import { useEffect } from "react";
-import { Link, useSearchParams } from "react-router-dom";
-import { CheckCircle, Download, Home, ShoppingBag } from "lucide-react";
-import { toast } from "sonner";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { CheckCircle, Home, ShoppingBag } from "lucide-react";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
-import { products } from "@/data/mockData";
 
 const ThankYouPage = () => {
-  const [searchParams] = useSearchParams();
-  const productId = searchParams.get("productId");
-
-  const product = products.find(p => p.id === parseInt(productId || "0"));
-
-  const formatPrice = (amount: number) => {
-    return new Intl.NumberFormat("es-PE", {
-      style: "currency",
-      currency: "PEN",
-    }).format(amount);
-  };
-
-  const whatsappNumber = "51947154677";
-
-  const paidMessage = product ? `Hola Bicheos, ya he realizado la compra de mi producto ${product.name}` : "Hola Bicheos, ya he realizado la compra de mi producto";
-  const paidWhatsAppUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(paidMessage)}`;
-
-  const infoMessage = "Hola Bicheos, tengo una consulta sobre mi pedido.";
-  const infoWhatsAppUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(infoMessage)}`;
+  const [order, setOrder] = useState<{ products: any[]; total: number } | null>(null);
 
   useEffect(() => {
-    if (product) {
-      toast.success("¡Formulario enviado con éxito!");
+    // Recuperar el resumen del pedido guardado en localStorage antes de limpiar el carrito
+    const lastOrder = localStorage.getItem("lastOrder");
+    if (lastOrder) {
+      setOrder(JSON.parse(lastOrder));
+      localStorage.removeItem("lastOrder");
     }
-  }, [product]);
+  }, []);
 
-  if (!product) {
-    return (
-      <Layout>
-        <div className="container mx-auto px-4 py-12 text-center">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-4">Error al procesar pedido</h2>
-          <p className="text-gray-600 mb-6">
-            No pudimos encontrar los detalles del producto. Por favor, intenta de nuevo o contacta con soporte.
-          </p>
-          <Button asChild className="bg-[#D3E4FD] hover:bg-[#c1d8f8] text-gray-800">
-            <Link to="/productos">Ver todos los productos</Link>
-          </Button>
-        </div>
-      </Layout>
-    );
+  // Generar mensajes de WhatsApp dinámicos
+  let pagoMsg = "Hola Bicheos, ya he realizado la compra de mi producto";
+  let consultaMsg = "Hola Bicheos tengo una consulta sobre mi pedido";
+  if (order && order.products.length > 0) {
+    const productos = order.products.map(p => `${p.name} x${p.quantity}`).join(", ");
+    pagoMsg = `Hola Bicheos, ya he realizado la compra de mi producto: ${productos}`;
   }
+  const whatsappNumber = "51947154677";
+  const pagoUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(pagoMsg)}`;
+  const consultaUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(consultaMsg)}`;
 
   return (
     <Layout>
@@ -56,65 +34,56 @@ const ThankYouPage = () => {
           <div className="w-20 h-20 bg-[#D3E4FD] rounded-full flex items-center justify-center mx-auto mb-6">
             <CheckCircle size={40} className="text-[#FEC6A1]" />
           </div>
-          
-          <h1 className="text-3xl font-semibold text-gray-800 mb-4">¡Solo queda un paso!</h1>
-          
+          <h1 className="text-3xl font-semibold text-gray-800 mb-4">¡Gracias por tu compra!</h1>
           <p className="text-gray-600 mb-6">
-            Tu pedido está casi listo. Para completarlo, realiza el pago a través de Yape escaneando el código QR o usando el número de teléfono.
+            Hemos recibido tu pedido correctamente. Para completarlo, realiza el pago a través de <b>Yape</b> o <b>transferencia bancaria</b> usando los datos a continuación. Apenas confirmemos el pago, prepararemos tu envío.
           </p>
-          
+          {order && (
+            <div className="bg-[#F1F0FB] p-4 rounded-lg mb-6 text-left">
+              <h2 className="text-xl font-semibold text-gray-800 mb-3">Resumen de tu pedido</h2>
+              <ul className="mb-2">
+                {order.products.map((item, idx) => (
+                  <li key={idx} className="flex justify-between text-gray-700">
+                    <span>{item.name} x{item.quantity}</span>
+                    <span>S/ {item.price * item.quantity}</span>
+                  </li>
+                ))}
+              </ul>
+              <div className="flex justify-between font-bold text-gray-800 border-t pt-2">
+                <span>Total</span>
+                <span>S/ {order.total}</span>
+              </div>
+            </div>
+          )}
           <div className="bg-[#F1F0FB] p-4 rounded-lg mb-6 text-left">
-            <h2 className="text-xl font-semibold text-gray-800 mb-3">Resumen de tu pedido</h2>
-            <p className="text-gray-700 mb-2">
-              <span className="font-medium">Producto:</span> {product.name}
-            </p>
-            <p className="text-gray-700">
-              <span className="font-medium">Precio:</span> {formatPrice(product.price)}
-            </p>
-          </div>
-          
-          <div className="mb-8">
-            <h3 className="text-xl font-semibold text-gray-800 mb-4">Paga con Yape</h3>
-            
-            <div className="mb-4">
-              <img
-                src="/img/yapex.jpeg"
-                alt="Código QR de Yape"
-                className="mx-auto rounded-lg"
-                style={{ maxWidth: '250px' }}
-              />
+            <h2 className="text-xl font-semibold text-gray-800 mb-3">Instrucciones de pago</h2>
+            <ul className="list-disc list-inside text-gray-700 space-y-2">
+              <li><b>Yape:</b> Escanea el código QR o usa el número <b>+51 947 154 677</b></li>
+              <li><b>Transferencia:</b> Solicita los datos bancarios por WhatsApp si lo prefieres</li>
+              <li>Envía el comprobante de pago por WhatsApp para agilizar el proceso</li>
+            </ul>
+            <div className="my-4 flex flex-col items-center">
+              <img src="/img/yapex.jpeg" alt="Código QR de Yape" className="mx-auto rounded-lg" style={{ maxWidth: '200px' }} />
+              <p className="text-gray-700 mt-2">Número de Yape: <span className="font-semibold">+51 947 154 677</span></p>
             </div>
-            
-            <p className="text-gray-700 mb-4">
-              Número de Yape: <span className="font-semibold">+51 947 154 677</span>
-            </p>
-            
-            <p className="text-gray-600 mb-6">
-              Por favor, realiza el pago y luego confírmalo haciendo click en el botón de abajo.
-            </p>
-            
-            <div className="flex flex-col gap-4 justify-center">
-              <Button
-                className="w-full bg-[#25D366] hover:bg-[#1DA851] text-white text-lg py-6"
-                asChild
-              >
-                <a href={paidWhatsAppUrl} target="_blank" rel="noopener noreferrer">
-                  Ya he realizado el Pago
-                </a>
-              </Button>
-              
-              <Button
-                variant="outline"
-                className="w-full border-[#25D366] text-[#25D366] hover:bg-[#EBF9F1] text-lg py-6"
-                asChild
-              >
-                <a href={infoWhatsAppUrl} target="_blank" rel="noopener noreferrer">
-                  Hablar con WhatsApp
-                </a>
-              </Button>
-            </div>
+            <Button
+              className="w-full bg-[#25D366] hover:bg-[#1DA851] text-white text-lg py-6 mb-2"
+              asChild
+            >
+              <a href={pagoUrl} target="_blank" rel="noopener noreferrer">
+                Ya he realizado el Pago
+              </a>
+            </Button>
+            <Button
+              variant="outline"
+              className="w-full border-[#25D366] text-[#25D366] hover:bg-[#EBF9F1] text-lg py-6"
+              asChild
+            >
+              <a href={consultaUrl} target="_blank" rel="noopener noreferrer">
+                Hablar con WhatsApp
+              </a>
+            </Button>
           </div>
-          
           <div className="mt-8">
             <Button
               variant="link"
@@ -126,7 +95,6 @@ const ThankYouPage = () => {
                 Ver otros productos
               </Link>
             </Button>
-            
             <Button
               variant="link"
               className="text-gray-600 hover:text-[#FEC6A1] ml-4"

@@ -9,6 +9,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
+import { useCart } from "@/CartContext";
+import { supabase } from "@/lib/supabaseClient";
 
 // For demo, we'll use a few products
 const cartItems = [
@@ -17,6 +19,7 @@ const cartItems = [
 ];
 
 const CheckoutPage = () => {
+  const { cart, clearCart } = useCart();
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   
@@ -27,29 +30,15 @@ const CheckoutPage = () => {
     phone: "",
     address: "",
     city: "",
-    postalCode: "",
-    country: "España",
-    shipping: "standard",
-    payment: "card",
-    cardNumber: "",
-    cardName: "",
-    cardExpiry: "",
-    cardCVC: "",
-    notes: ""
+    notes: "",
+    payment: "yape"
   });
   
-  // Calculate totals
-  const subtotal = cartItems.reduce((sum, item) => {
-    const itemPrice = item.discount > 0 
-      ? item.price - (item.price * item.discount / 100) 
-      : item.price;
-    return sum + (itemPrice * item.quantity);
-  }, 0);
-  
-  const shipping = formData.shipping === "express" ? 9.99 : (subtotal >= 50 ? 0 : 4.99);
+  // Calcular totales
+  const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const shipping = subtotal >= 50 ? 0 : 4.99;
   const total = subtotal + shipping;
   
-  // Format price as currency
   const formatPrice = (amount: number) => {
     return new Intl.NumberFormat("es-PE", {
       style: "currency",
@@ -57,61 +46,62 @@ const CheckoutPage = () => {
     }).format(amount);
   };
   
-  // Handle form input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value
-    });
+    const { name, value, type } = e.target;
+    setFormData({ ...formData, [name]: value });
   };
   
-  // Handle radio button changes
-  const handleRadioChange = (name: string, value: string) => {
-    setFormData({
-      ...formData,
-      [name]: value
-    });
-  };
-  
-  // Handle form submission
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Simple validation
-    if (
-      !formData.firstName ||
-      !formData.lastName ||
-      !formData.email ||
-      !formData.phone ||
-      !formData.address ||
-      !formData.city ||
-      !formData.postalCode
-    ) {
+    if (!formData.firstName || !formData.lastName || !formData.email || !formData.phone || !formData.address || !formData.city) {
       toast.error("Por favor, completa todos los campos obligatorios");
       return;
     }
-    
-    // Validate payment details if card is selected
-    if (formData.payment === "card") {
-      if (
-        !formData.cardNumber ||
-        !formData.cardName ||
-        !formData.cardExpiry ||
-        !formData.cardCVC
-      ) {
-        toast.error("Por favor, completa todos los datos de la tarjeta");
-        return;
-      }
+    if (cart.length === 0) {
+      toast.error("El carrito está vacío");
+      return;
     }
-    
     setIsSubmitting(true);
-    
-    // Simulate API call
-    setTimeout(() => {
+    // Guardar pedido en Supabase
+    const { data: pedido, error } = await supabase.from("pedidos").insert([
+      {
+        nombre: formData.firstName + " " + formData.lastName,
+        email: formData.email,
+        telefono: formData.phone,
+        direccion: formData.address + ", " + formData.city,
+        total,
+        estado: "pendiente",
+        notas: formData.notes,
+        metodo_pago: formData.payment
+      }
+    ]).select().single();
+    if (error || !pedido) {
+      toast.error("Error al guardar el pedido");
       setIsSubmitting(false);
-      navigate("/gracias");
-    }, 1500);
+      return;
+    }
+    // Guardar productos del pedido
+    const items = cart.map(item => ({
+      pedido_id: pedido.id,
+      producto_id: item.id,
+      nombre_producto: item.name,
+      cantidad: item.quantity,
+      precio_unitario: item.price
+    }));
+    const { error: itemsError } = await supabase.from("pedido_items").insert(items);
+    if (itemsError) {
+      toast.error("Error al guardar los productos del pedido");
+      setIsSubmitting(false);
+      return;
+    }
+    // Guardar resumen del pedido en localStorage para la página de gracias
+    localStorage.setItem("lastOrder", JSON.stringify({
+      products: cart,
+      total
+    }));
+    clearCart();
+    setIsSubmitting(false);
+    navigate("/gracias");
   };
   
   return (
@@ -208,20 +198,10 @@ const CheckoutPage = () => {
                       required
                     />
                   </div>
-                  <div>
-                    <Label htmlFor="postalCode">Código Postal <span className="text-red-500">*</span></Label>
-                    <Input
-                      id="postalCode"
-                      name="postalCode"
-                      value={formData.postalCode}
-                      onChange={handleChange}
-                      className="mt-1"
-                      required
-                    />
-                  </div>
                 </div>
                 
-                <div>
+                {/* Eliminar el input de país: */}
+                {/* <div>
                   <Label htmlFor="country">País <span className="text-red-500">*</span></Label>
                   <Input
                     id="country"
@@ -231,143 +211,26 @@ const CheckoutPage = () => {
                     className="mt-1"
                     disabled
                   />
-                </div>
+                </div> */}
               </div>
               
               {/* Shipping Method */}
-              <div className="bg-white rounded-2xl shadow-sm p-6 mb-6">
-                <h2 className="text-xl font-semibold text-gray-800 mb-4">Método de envío</h2>
-                
-                <RadioGroup 
-                  value={formData.shipping} 
-                  onValueChange={(value) => handleRadioChange("shipping", value)}
-                  className="space-y-4"
-                >
-                  <div className="flex items-center space-x-3 border border-gray-200 rounded-lg p-4 cursor-pointer hover:border-[#D3E4FD]">
-                    <RadioGroupItem value="standard" id="standard" />
-                    <Label htmlFor="standard" className="flex-1 cursor-pointer">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-medium">Envío estándar</p>
-                          <p className="text-sm text-gray-500">Entrega en 2-4 días laborables</p>
-                        </div>
-                        <div className="font-medium">
-                          {subtotal >= 50 ? "Gratis" : formatPrice(15.90)}
-                        </div>
-                      </div>
-                    </Label>
-                  </div>
-                  
-                  <div className="flex items-center space-x-3 border border-gray-200 rounded-lg p-4 cursor-pointer hover:border-[#D3E4FD]">
-                    <RadioGroupItem value="express" id="express" />
-                    <Label htmlFor="express" className="flex-1 cursor-pointer">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-medium">Envío express</p>
-                          <p className="text-sm text-gray-500">Entrega en 24-48 horas</p>
-                        </div>
-                        <div className="font-medium">{formatPrice(29.90)}</div>
-                      </div>
-                    </Label>
-                  </div>
-                </RadioGroup>
-              </div>
+              {/* Eliminar la sección de método de envío (RadioGroup de shipping). */}
               
               {/* Payment Method */}
               <div className="bg-white rounded-2xl shadow-sm p-6 mb-6">
                 <h2 className="text-xl font-semibold text-gray-800 mb-4">Método de pago</h2>
-                
-                <RadioGroup 
-                  value={formData.payment} 
-                  onValueChange={(value) => handleRadioChange("payment", value)}
-                  className="space-y-4 mb-6"
-                >
-                  <div className="flex items-center space-x-3 border border-gray-200 rounded-lg p-4 cursor-pointer hover:border-[#D3E4FD]">
-                    <RadioGroupItem value="card" id="card" />
-                    <Label htmlFor="card" className="flex-1 cursor-pointer">
-                      <div className="flex items-center">
-                        <CreditCard size={24} className="mr-2 text-gray-600" />
-                        <p className="font-medium">Tarjeta de crédito/débito</p>
-                      </div>
-                    </Label>
-                  </div>
-                  
-                  <div className="flex items-center space-x-3 border border-gray-200 rounded-lg p-4 cursor-pointer hover:border-[#D3E4FD]">
-                    <RadioGroupItem value="paypal" id="paypal" />
-                    <Label htmlFor="paypal" className="flex-1 cursor-pointer">
-                      <div className="flex items-center">
-                        <div className="bg-[#169BD7] text-white px-2 py-1 rounded text-xs font-bold mr-2">Pay</div>
-                        <p className="font-medium">PayPal</p>
-                      </div>
-                    </Label>
-                  </div>
-                  
-                  <div className="flex items-center space-x-3 border border-gray-200 rounded-lg p-4 cursor-pointer hover:border-[#D3E4FD]">
-                    <RadioGroupItem value="transfer" id="transfer" />
-                    <Label htmlFor="transfer" className="flex-1 cursor-pointer">
-                      <div className="flex items-center">
-                        <div className="mr-2 w-6 h-6 bg-[#F1F0FB] rounded-full flex items-center justify-center">
-                          <span className="text-xs font-bold">T</span>
-                        </div>
-                        <p className="font-medium">Transferencia bancaria</p>
-                      </div>
-                    </Label>
-                  </div>
-                </RadioGroup>
-                
-                {/* Card Details (shown only if card is selected) */}
-                {formData.payment === "card" && (
-                  <div className="space-y-4 p-4 bg-[#F1F0FB] rounded-lg">
-                    <div>
-                      <Label htmlFor="cardNumber">Número de tarjeta</Label>
-                      <Input
-                        id="cardNumber"
-                        name="cardNumber"
-                        value={formData.cardNumber}
-                        onChange={handleChange}
-                        placeholder="1234 5678 9012 3456"
-                        className="mt-1"
-                      />
-                    </div>
-                    
-                    <div>
-                      <Label htmlFor="cardName">Nombre en la tarjeta</Label>
-                      <Input
-                        id="cardName"
-                        name="cardName"
-                        value={formData.cardName}
-                        onChange={handleChange}
-                        placeholder="NOMBRE APELLIDOS"
-                        className="mt-1"
-                      />
-                    </div>
-                    
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="cardExpiry">Fecha de caducidad</Label>
-                        <Input
-                          id="cardExpiry"
-                          name="cardExpiry"
-                          value={formData.cardExpiry}
-                          onChange={handleChange}
-                          placeholder="MM/AA"
-                          className="mt-1"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="cardCVC">CVC</Label>
-                        <Input
-                          id="cardCVC"
-                          name="cardCVC"
-                          value={formData.cardCVC}
-                          onChange={handleChange}
-                          placeholder="123"
-                          className="mt-1"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                )}
+                <div className="flex flex-col gap-4">
+                  <label className="flex items-center gap-2">
+                    <input type="radio" name="payment" value="yape" checked={formData.payment === "yape"} onChange={handleChange} />
+                    <span>Yape</span>
+                  </label>
+                  <label className="flex items-center gap-2">
+                    <input type="radio" name="payment" value="transferencia" checked={formData.payment === "transferencia"} onChange={handleChange} />
+                    <span>Transferencia bancaria</span>
+                  </label>
+                </div>
+                <p className="text-sm text-gray-500 mt-2">Recibirás las instrucciones de pago al finalizar tu pedido.</p>
               </div>
               
               {/* Additional Notes */}
@@ -393,25 +256,15 @@ const CheckoutPage = () => {
               
               {/* Products */}
               <div className="space-y-4 mb-6">
-                {cartItems.map((item) => {
-                  const itemPrice = item.discount > 0 
-                    ? item.price - (item.price * item.discount / 100) 
-                    : item.price;
-                    
-                  return (
-                    <div key={item.id} className="flex justify-between">
-                      <div className="flex-1">
-                        <p className="text-gray-800">{item.name}</p>
-                        <p className="text-sm text-gray-500">
-                          Cantidad: {item.quantity}
-                        </p>
-                      </div>
-                      <p className="text-gray-800 ml-4">
-                        {formatPrice(itemPrice * item.quantity)}
-                      </p>
+                {cart.map((item) => (
+                  <div key={item.id} className="flex justify-between">
+                    <div className="flex-1">
+                      <p className="text-gray-800">{item.name}</p>
+                      <p className="text-sm text-gray-500">Cantidad: {item.quantity}</p>
                     </div>
-                  );
-                })}
+                    <p className="text-gray-800 ml-4">{formatPrice(item.price * item.quantity)}</p>
+                  </div>
+                ))}
               </div>
               
               <Separator className="my-4" />

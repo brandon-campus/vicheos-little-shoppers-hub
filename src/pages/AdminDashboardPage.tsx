@@ -5,13 +5,15 @@ import { Link } from "react-router-dom";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { ChartContainer, ChartLegend, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { BarChart, Bar, XAxis, YAxis } from "recharts";
-import { Package, Layers, Mail, LogOut } from "lucide-react";
+import { Package, Layers, Mail, LogOut, AlertCircle, ListChecks } from "lucide-react";
 import bicheosLogo from "@/../public/img/bicheoslogo.png";
 
 const sidebarLinks = [
   { to: "/admin-products", label: "Productos", icon: <Package className="w-5 h-5 mr-2" /> },
   { to: "/admin-categorias", label: "Categorías", icon: <Layers className="w-5 h-5 mr-2" /> },
+  { to: "/admin-pedidos", label: "Pedidos", icon: <ListChecks className="w-5 h-5 mr-2 text-[#2563eb]" /> },
   { to: "/admin-contactos", label: "Mensajes de contacto", icon: <Mail className="w-5 h-5 mr-2" /> },
+  { to: "/admin-reclamos", label: "Reclamos", icon: <AlertCircle className="w-5 h-5 mr-2 text-[#ff9800]" /> },
 ];
 
 const AdminDashboardPage = () => {
@@ -20,6 +22,7 @@ const AdminDashboardPage = () => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [contactos, setContactos] = useState([]);
+  const [reclamos, setReclamos] = useState([]);
   const [animate, setAnimate] = useState(false);
 
   useEffect(() => {
@@ -39,6 +42,8 @@ const AdminDashboardPage = () => {
       setCategories(cats || []);
       const { data: msgs } = await supabase.from("contactos").select("*");
       setContactos(msgs || []);
+      const { data: recls } = await supabase.from("reclamos").select("*").order("created_at", { ascending: false });
+      setReclamos(recls || []);
       setLoading(false);
     };
     fetchData();
@@ -102,7 +107,7 @@ const AdminDashboardPage = () => {
               </div>
             </div>
             {/* Fin header */}
-            <div className={`mb-8 grid grid-cols-1 md:grid-cols-3 gap-6 transition-all duration-700 ${animate ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+            <div className={`mb-8 grid grid-cols-1 md:grid-cols-4 gap-6 transition-all duration-700 ${animate ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
               <Card className="bg-gradient-to-br from-[#D3E4FD] to-[#FEC6A1] shadow-lg rounded-xl transition-all duration-300 hover:shadow-2xl hover:scale-105 hover:from-[#2563eb]/20 hover:to-[#ff9800]/30 cursor-pointer">
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
                   <CardTitle className="text-lg font-semibold text-gray-800">Productos</CardTitle>
@@ -133,6 +138,16 @@ const AdminDashboardPage = () => {
                   <p className="text-xs text-gray-500 mt-1">Recibidos</p>
                 </CardContent>
               </Card>
+              <Card className="bg-gradient-to-br from-[#FEC6A1] to-[#D3E4FD] shadow-lg rounded-xl transition-all duration-300 hover:shadow-2xl hover:scale-105 hover:from-[#ff9800]/20 hover:to-[#2563eb]/30 cursor-pointer">
+                <CardHeader className="flex flex-row items-center justify-between pb-2">
+                  <CardTitle className="text-lg font-semibold text-gray-800">Reclamos</CardTitle>
+                  <AlertCircle className="w-7 h-7 text-[#ff9800]" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold text-gray-900">{reclamos.length}</div>
+                  <p className="text-xs text-gray-500 mt-1">Libro de Reclamaciones</p>
+                </CardContent>
+              </Card>
             </div>
             <div className={`bg-white rounded-2xl shadow-md p-4 mt-8 transition-all duration-700 ${animate ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
               <h2 className="text-xl font-semibold mb-6 text-gray-800">Productos por Categoría</h2>
@@ -146,6 +161,34 @@ const AdminDashboardPage = () => {
                     <ChartLegend />
                   </BarChart>
                 </ChartContainer>
+              </div>
+            </div>
+            {/* Tabla de últimos reclamos */}
+            <div className="bg-white rounded-2xl shadow-md p-4 mt-8 transition-all duration-700">
+              <h2 className="text-xl font-semibold mb-6 text-gray-800">Últimos Reclamos</h2>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left">
+                  <thead>
+                    <tr>
+                      <th>Fecha</th>
+                      <th>Nombre</th>
+                      <th>Email</th>
+                      <th>Tipo</th>
+                      <th>Descripción</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {reclamos.slice(0, 10).map((rec) => (
+                      <tr key={rec.id}>
+                        <td>{rec.created_at ? new Date(rec.created_at).toLocaleString() : ""}</td>
+                        <td>{rec.nombres} {rec.apellidos}</td>
+                        <td>{rec.email}</td>
+                        <td>{rec.tipo_reclamo}</td>
+                        <td className="max-w-xs truncate" title={rec.descripcion}>{rec.descripcion}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>

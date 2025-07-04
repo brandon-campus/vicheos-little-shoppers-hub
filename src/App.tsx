@@ -20,6 +20,9 @@ import AdminDashboardPage from "./pages/AdminDashboardPage";
 import AdminProductsPage from "./pages/AdminProductsPage";
 import AdminCategoriasPage from "./pages/AdminCategoriasPage";
 import AdminContactosPage from "./pages/AdminContactosPage";
+import AdminReclamosPage from "./pages/AdminReclamosPage";
+import AdminPedidosPage from "./pages/AdminPedidosPage";
+import { CartProvider } from "./CartContext";
 
 const queryClient = new QueryClient();
 
@@ -29,26 +32,30 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <BrowserRouter>
-          <ScrollToTop />
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/productos" element={<ProductsPage />} />
-            <Route path="/categorias" element={<CategoriesPage />} />
-            <Route path="/contacto" element={<ContactPage />} />
-            <Route path="/producto/:id" element={<ProductDetailPage />} />
-            <Route path="/carrito" element={<CartPage />} />
-            <Route path="/checkout" element={<CheckoutPage />} />
-            <Route path="/gracias" element={<ThankYouPage />} />
-            <Route path="/libro-reclamaciones" element={<LibroReclamacionesPage />} />
-            <Route path="/admin-login" element={<AdminLoginPage />} />
-            <Route path="/admin" element={<AdminDashboardPage />} />
-            <Route path="/admin-products" element={<AdminProductsPage />} />
-            <Route path="/admin-categorias" element={<AdminCategoriasPage />} />
-            <Route path="/admin-contactos" element={<AdminContactosPage />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
+        <CartProvider>
+          <BrowserRouter>
+            <ScrollToTop />
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/productos" element={<ProductsPage />} />
+              <Route path="/categorias" element={<CategoriesPage />} />
+              <Route path="/contacto" element={<ContactPage />} />
+              <Route path="/producto/:id" element={<ProductDetailPage />} />
+              <Route path="/carrito" element={<CartPage />} />
+              <Route path="/checkout" element={<CheckoutPage />} />
+              <Route path="/gracias" element={<ThankYouPage />} />
+              <Route path="/libro-reclamaciones" element={<LibroReclamacionesPage />} />
+              <Route path="/admin-login" element={<AdminLoginPage />} />
+              <Route path="/admin" element={<AdminDashboardPage />} />
+              <Route path="/admin-products" element={<AdminProductsPage />} />
+              <Route path="/admin-categorias" element={<AdminCategoriasPage />} />
+              <Route path="/admin-contactos" element={<AdminContactosPage />} />
+              <Route path="/admin-reclamos" element={<AdminReclamosPage />} />
+              <Route path="/admin-pedidos" element={<AdminPedidosPage />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </CartProvider>
       </TooltipProvider>
     </QueryClientProvider>
   </HelmetProvider>
