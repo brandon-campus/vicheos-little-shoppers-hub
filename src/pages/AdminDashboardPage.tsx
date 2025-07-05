@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { ChartContainer, ChartLegend, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import { BarChart, Bar, XAxis, YAxis } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, Legend, Line, LineChart } from "recharts";
 import { Package, Layers, Mail, LogOut, AlertCircle, ListChecks } from "lucide-react";
 import bicheosLogo from "@/../public/img/bicheoslogo.png";
 
@@ -23,7 +23,9 @@ const AdminDashboardPage = () => {
   const [categories, setCategories] = useState([]);
   const [contactos, setContactos] = useState([]);
   const [reclamos, setReclamos] = useState([]);
+  const [pedidos, setPedidos] = useState([]);
   const [animate, setAnimate] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const getUser = async () => {
@@ -44,6 +46,8 @@ const AdminDashboardPage = () => {
       setContactos(msgs || []);
       const { data: recls } = await supabase.from("reclamos").select("*").order("created_at", { ascending: false });
       setReclamos(recls || []);
+      const { data: peds } = await supabase.from("pedidos").select("*");
+      setPedidos(peds || []);
       setLoading(false);
     };
     fetchData();
@@ -57,11 +61,27 @@ const AdminDashboardPage = () => {
 
   if (loading) return <div className="min-h-screen flex items-center justify-center">Cargando...</div>;
 
-  // Datos para el gráfico de productos por categoría
-  const chartData = categories.map(cat => ({
-    name: cat.name,
-    Productos: cat.productCount || products.filter(p => p.category === cat.id || p.category === cat.name).length
-  }));
+  // Datos para el gráfico de pedidos e ingresos por mes
+  const pedidosPorMes = Array.from({ length: 12 }, (_, i) => {
+    const date = new Date();
+    date.setMonth(date.getMonth() - (11 - i));
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const label = date.toLocaleString("es-PE", { month: "short", year: "2-digit" });
+    return { year, month, label, pedidos: 0, ingresos: 0 };
+  });
+  pedidos.forEach(p => {
+    if (!p.created_at) return;
+    const d = new Date(p.created_at);
+    const year = d.getFullYear();
+    const month = d.getMonth();
+    // Buscar el mes correspondiente en los últimos 12 meses
+    const idx = pedidosPorMes.findIndex(m => m.year === year && m.month === month);
+    if (idx !== -1) {
+      pedidosPorMes[idx].pedidos += 1;
+      pedidosPorMes[idx].ingresos += Number(p.total) || 0;
+    }
+  });
 
   return (
     <div className="min-h-screen bg-[#F1F0FB] py-12">
@@ -107,7 +127,7 @@ const AdminDashboardPage = () => {
               </div>
             </div>
             {/* Fin header */}
-            <div className={`mb-8 grid grid-cols-1 md:grid-cols-4 gap-6 transition-all duration-700 ${animate ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+            <div className={`mb-8 grid grid-cols-1 md:grid-cols-5 gap-6 transition-all duration-700 ${animate ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
               <Card className="bg-gradient-to-br from-[#D3E4FD] to-[#FEC6A1] shadow-lg rounded-xl transition-all duration-300 hover:shadow-2xl hover:scale-105 hover:from-[#2563eb]/20 hover:to-[#ff9800]/30 cursor-pointer">
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
                   <CardTitle className="text-lg font-semibold text-gray-800">Productos</CardTitle>
@@ -126,6 +146,16 @@ const AdminDashboardPage = () => {
                 <CardContent>
                   <div className="text-3xl font-bold text-gray-900">{categories.length}</div>
                   <p className="text-xs text-gray-500 mt-1">Total registradas</p>
+                </CardContent>
+              </Card>
+              <Card onClick={() => navigate('/admin-pedidos')} className="bg-gradient-to-br from-[#D3E4FD] to-[#FEC6A1] shadow-lg rounded-xl transition-all duration-300 hover:shadow-2xl hover:scale-105 hover:from-[#2563eb]/20 hover:to-[#ff9800]/30 cursor-pointer">
+                <CardHeader className="flex flex-row items-center justify-between pb-2">
+                  <CardTitle className="text-lg font-semibold text-gray-800">Pedidos</CardTitle>
+                  <ListChecks className="w-7 h-7 text-[#2563eb]" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold text-gray-900">{pedidos.length}</div>
+                  <p className="text-xs text-gray-500 mt-1">Total recibidos</p>
                 </CardContent>
               </Card>
               <Card className="bg-gradient-to-br from-[#D3E4FD] to-[#FEC6A1] shadow-lg rounded-xl transition-all duration-300 hover:shadow-2xl hover:scale-105 hover:from-[#2563eb]/20 hover:to-[#ff9800]/30 cursor-pointer">
@@ -150,17 +180,19 @@ const AdminDashboardPage = () => {
               </Card>
             </div>
             <div className={`bg-white rounded-2xl shadow-md p-4 mt-8 transition-all duration-700 ${animate ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-              <h2 className="text-xl font-semibold mb-6 text-gray-800">Productos por Categoría</h2>
-              <div className="w-full">
-                <ChartContainer config={{ Productos: { color: '#2563eb', label: 'Productos' } }}>
-                  <BarChart data={chartData} height={160}>
-                    <XAxis dataKey="name" stroke="#888" />
-                    <YAxis allowDecimals={false} stroke="#888" />
-                    <Bar dataKey="Productos" fill="#2563eb" radius={[8, 8, 0, 0]} />
-                    <ChartTooltip content={<ChartTooltipContent />} />
-                    <ChartLegend />
+              <h2 className="text-xl font-semibold mb-6 text-gray-800">Pedidos e ingresos por mes</h2>
+              <div className="w-full h-72">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={pedidosPorMes} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                    <XAxis dataKey="label" stroke="#888" />
+                    <YAxis yAxisId="left" allowDecimals={false} stroke="#2563eb" />
+                    <YAxis yAxisId="right" orientation="right" stroke="#ff9800" tickFormatter={v => `S/ ${v}`}/>
+                    <Tooltip formatter={(value, name) => name === 'ingresos' ? `S/ ${value}` : value} />
+                    <Legend />
+                    <Bar yAxisId="left" dataKey="pedidos" fill="#2563eb" name="Pedidos" radius={[8, 8, 0, 0]} />
+                    <Line yAxisId="right" type="monotone" dataKey="ingresos" stroke="#ff9800" strokeWidth={3} name="Ingresos" dot={{ r: 4 }} activeDot={{ r: 6 }} />
                   </BarChart>
-                </ChartContainer>
+                </ResponsiveContainer>
               </div>
             </div>
             {/* Tabla de últimos reclamos */}

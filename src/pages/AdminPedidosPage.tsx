@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Table } from "@/components/ui/table";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
-import { Filter, X, Search } from "lucide-react";
+import { Filter, X, Search, Phone, Mail as MailIcon, MessageCircle } from "lucide-react";
 
 const estados = ["pendiente", "pagado", "enviado", "cancelado"];
 const metodosPago = ["yape", "transferencia"];
@@ -282,10 +282,36 @@ const AdminPedidosPage = () => {
         {/* Modal de detalle de pedido */}
         {detallePedido && (
           <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
-            <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-lg relative">
+            <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-lg relative max-h-[90vh] overflow-y-auto">
               <button onClick={cerrarDetalle} className="absolute top-3 right-3 text-gray-400 hover:text-gray-700 text-2xl">&times;</button>
               <h2 className="text-xl font-bold mb-4">Detalle del pedido #{detallePedido.id}</h2>
-              <div className="mb-2 text-gray-700"><b>Cliente:</b> {detallePedido.nombre}</div>
+              <div className="mb-2 text-gray-700 flex items-center gap-2">
+                <b>Cliente:</b> {detallePedido.nombre}
+                {/* Accesos rápidos */}
+                <a
+                  href={`https://wa.me/51${detallePedido.telefono.replace(/[^0-9]/g, "")}?text=${encodeURIComponent(`Hola ${detallePedido.nombre}, te contactamos de Bicheos por tu pedido #${detallePedido.id}`)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="WhatsApp"
+                  className="ml-2 text-green-600 hover:text-green-800"
+                >
+                  <MessageCircle className="inline w-5 h-5" />
+                </a>
+                <a
+                  href={`tel:${detallePedido.telefono}`}
+                  title="Llamar"
+                  className="text-blue-600 hover:text-blue-800"
+                >
+                  <Phone className="inline w-5 h-5" />
+                </a>
+                <a
+                  href={`mailto:${detallePedido.email}?subject=Pedido%20Bicheos%20#${detallePedido.id}`}
+                  title="Email"
+                  className="text-[#2563eb] hover:text-blue-800"
+                >
+                  <MailIcon className="inline w-5 h-5" />
+                </a>
+              </div>
               <div className="mb-2 text-gray-700"><b>Email:</b> {detallePedido.email}</div>
               <div className="mb-2 text-gray-700"><b>Teléfono:</b> {detallePedido.telefono}</div>
               <div className="mb-2 text-gray-700"><b>Dirección:</b> {detallePedido.direccion}</div>
