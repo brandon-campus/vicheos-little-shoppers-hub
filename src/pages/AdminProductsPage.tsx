@@ -27,17 +27,35 @@ const initialForm = {
 // Función mejorada para subir imágenes
 async function uploadImageToSupabase(file) {
   try {
-    console.log("Iniciando subida de imagen:", file.name);
+    console.log("=== SUBIENDO IMAGEN ===");
+    console.log("Archivo:", file);
+    console.log("Nombre del archivo:", file.name);
+    console.log("Tipo del archivo:", file.type);
+    console.log("Tamaño del archivo:", file.size);
+    
+    // Verificar que el archivo existe
+    if (!file) {
+      throw new Error("No se proporcionó ningún archivo");
+    }
+    
+    // Verificar el tipo de archivo
+    if (!file.type.startsWith('image/')) {
+      throw new Error("El archivo debe ser una imagen");
+    }
     
     // Limpiar el nombre del archivo
     const cleanFileName = file.name
-      .replace(/[^a-zA-Z0-9.-]/g, '_')
-      .replace(/_+/g, '_')
-      .replace(/^_|_$/g, '');
+      .replace(/[^a-zA-Z0-9.-]/g, '_') // Reemplazar caracteres especiales con guiones bajos
+      .replace(/_+/g, '_') // Reemplazar múltiples guiones bajos con uno solo
+      .replace(/^_|_$/g, ''); // Eliminar guiones bajos al inicio y final
     
+    // Crear ruta del archivo con nombre limpio
     const filePath = `imagenes/${Date.now()}_${cleanFileName}`;
+    
+    console.log("Nombre limpio:", cleanFileName);
     console.log("Ruta del archivo:", filePath);
     
+    // Subir el archivo
     const { data, error } = await supabase.storage
       .from('productos')
       .upload(filePath, file, {
@@ -57,7 +75,7 @@ async function uploadImageToSupabase(file) {
       .from('productos')
       .getPublicUrl(data.path);
     
-    console.log("URL pública generada:", publicUrlData.publicUrl);
+    console.log("URL pública:", publicUrlData.publicUrl);
     
     return publicUrlData.publicUrl;
     
@@ -159,6 +177,12 @@ const AdminProductsPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
+    console.log("=== INICIO DE SUBIDA DE PRODUCTO ===");
+    console.log("Form data:", form);
+    console.log("Image file:", imageFile);
+    console.log("Gallery files:", galleryFiles);
+    
+    // Solo el nombre es obligatorio
     if (!form.name.trim()) {
       toast.error("El nombre del producto es obligatorio");
       return;
@@ -172,7 +196,9 @@ const AdminProductsPage = () => {
       if (imageFile) {
         console.log("Subiendo imagen principal...");
         imageUrl = await uploadImageToSupabase(imageFile);
-        console.log("URL de imagen principal obtenida:", imageUrl);
+        console.log("Imagen principal subida:", imageUrl);
+      } else {
+        console.log("No hay archivo de imagen para subir, usando URL existente:", imageUrl);
       }
       
       // Subir galería si hay archivos nuevos
@@ -180,7 +206,9 @@ const AdminProductsPage = () => {
         console.log("Subiendo galería...");
         const uploads = await Promise.all(galleryFiles.map(file => uploadImageToSupabase(file)));
         galleryUrls = uploads;
-        console.log("URLs de galería obtenidas:", galleryUrls);
+        console.log("Galería subida:", galleryUrls);
+      } else {
+        console.log("No hay archivos de galería para subir, usando URLs existentes:", galleryUrls);
       }
     } catch (err) {
       console.error("Error al subir imágenes:", err);
@@ -197,12 +225,12 @@ const AdminProductsPage = () => {
       discountPercentage: Number(form.discountPercentage) || 0,
       rating: Number(form.rating) || 0,
       reviews: Number(form.reviews) || 0,
-      image: imageUrl || "", // Asegurar que la URL se guarde
+      image: imageUrl || "",
       gallery: galleryUrls,
       features: typeof form.features === "string" ? form.features.split("|").map((f) => f.trim()).filter(Boolean) : [],
     };
 
-    console.log("Datos del producto a guardar:", productData);
+    console.log("Datos finales del producto a guardar:", productData);
 
     let result;
     if (editId) {

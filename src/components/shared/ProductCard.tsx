@@ -9,6 +9,7 @@ export interface ProductProps {
   name: string;
   price: number;
   image: string;
+  gallery?: string[] | string;
   isNew?: boolean;
   isOffer?: boolean;
   discountPercentage?: number;
@@ -20,6 +21,7 @@ const ProductCard = ({
   name,
   price,
   image,
+  gallery,
   isNew = false,
   isOffer = false,
   discountPercentage = 0,
@@ -35,6 +37,34 @@ const ProductCard = ({
     }).format(amount);
   };
 
+  // Función para obtener la imagen a mostrar
+  const getDisplayImage = () => {
+    // Si hay imagen principal y no está vacía
+    if (image && image.trim() !== '') {
+      return image;
+    }
+    
+    // Si no hay imagen principal pero hay galería
+    if (gallery) {
+      let galleryArray = gallery;
+      
+      // Si gallery es string, convertir a array
+      if (typeof gallery === 'string') {
+        galleryArray = gallery.split('|').map(url => url.trim()).filter(Boolean);
+      }
+      
+      // Si hay imágenes en la galería, usar la primera
+      if (Array.isArray(galleryArray) && galleryArray.length > 0) {
+        return galleryArray[0];
+      }
+    }
+    
+    // Si no hay ninguna imagen, usar placeholder
+    return '/img/placeholder.svg';
+  };
+
+  const displayImage = getDisplayImage();
+
   const { addToCart } = useCart();
   const navigate = useNavigate();
 
@@ -43,7 +73,7 @@ const ProductCard = ({
       id,
       name,
       price: discountedPrice,
-      image,
+      image: displayImage,
       quantity: 1,
       isOffer,
       discountPercentage,
@@ -56,7 +86,7 @@ const ProductCard = ({
       id,
       name,
       price: discountedPrice,
-      image,
+      image: displayImage,
       quantity: 1,
       isOffer,
       discountPercentage,
@@ -92,9 +122,14 @@ const ProductCard = ({
       <Link to={`/producto/${id}`} className="block">
         <div className="aspect-square overflow-hidden">
           <img
-            src={image}
+            src={displayImage}
             alt={name}
             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+            onError={(e) => {
+              // Si la imagen falla al cargar, usar placeholder
+              const target = e.target as HTMLImageElement;
+              target.src = '/img/placeholder.svg';
+            }}
           />
         </div>
       </Link>

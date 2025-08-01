@@ -28,7 +28,39 @@ const ProductsPage = () => {
         console.error("Error al obtener productos:", error);
         setProducts([]);
       } else {
-        setProducts(data);
+        // Procesar cada producto para arreglar la galería
+        const processedProducts = data.map(product => {
+          let processedGallery = product.gallery;
+          
+          if (product.gallery) {
+            if (typeof product.gallery === "string") {
+              try {
+                processedGallery = JSON.parse(product.gallery);
+              } catch {
+                processedGallery = product.gallery.split("|").map(url => url.trim()).filter(Boolean);
+              }
+            } else if (Array.isArray(product.gallery)) {
+              processedGallery = product.gallery.flatMap(item => {
+                if (typeof item === "string") {
+                  try {
+                    const parsed = JSON.parse(item);
+                    return Array.isArray(parsed) ? parsed : [parsed];
+                  } catch {
+                    return [item];
+                  }
+                }
+                return [item];
+              }).filter(Boolean);
+            }
+          }
+          
+          return {
+            ...product,
+            gallery: processedGallery || []
+          };
+        });
+        
+        setProducts(processedProducts);
       }
       setLoading(false);
     };
@@ -308,9 +340,11 @@ const ProductsPage = () => {
                       name={product.name}
                       price={product.price}
                       image={product.image}
+                      gallery={product.gallery}
                       isNew={product.isNew}
                       isOffer={product.isOffer}
                       discountPercentage={product.discountPercentage}
+                      category={product.category}
                     />
                   ))}
                 </div>

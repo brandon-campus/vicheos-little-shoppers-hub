@@ -29,26 +29,70 @@ const ProductDetailPage = () => {
   const navigate = useNavigate();
   
   useEffect(() => {
-    const fetchProduct = async () => {
-      const { data, error } = await supabase.from("productos").select("*").eq("id", id).single();
-      if (error) {
-        console.error("Error fetching product:", error);
-        setProduct(null);
-      } else {
-        console.log("Product data received:", data);
-        // Convierte gallery y features a array si vienen como string
-        const fixedData = {
-          ...data,
-          gallery: typeof data.gallery === "string" ? data.gallery.split("|").filter(Boolean) : (data.gallery || []),
-          features: typeof data.features === "string" ? data.features.split("|").filter(Boolean) : (data.features || []),
-        };
-        console.log("Fixed product data:", fixedData);
-        setProduct(fixedData);
+  const fetchProduct = async () => {
+    console.log("=== CARGANDO PRODUCTO ===");
+    console.log("ID del producto:", id);
+    
+    const { data, error } = await supabase.from("productos").select("*").eq("id", id).single();
+    
+    if (error) {
+      console.error("Error al obtener producto:", error);
+      setProduct(null);
+    } else {
+      console.log("Producto obtenido de la BD:", data);
+      
+      // Procesar galería correctamente
+      let processedGallery = data.gallery;
+      
+      if (data.gallery) {
+        if (typeof data.gallery === "string") {
+          // Si es string, puede ser JSON o separado por |
+          try {
+            // Intentar parsear como JSON primero
+            processedGallery = JSON.parse(data.gallery);
+          } catch {
+            // Si falla, separar por |
+            processedGallery = data.gallery.split("|").map(url => url.trim()).filter(Boolean);
+          }
+        } else if (Array.isArray(data.gallery)) {
+          // Si es array, verificar si contiene strings JSON
+          processedGallery = data.gallery.flatMap(item => {
+            if (typeof item === "string") {
+              try {
+                // Intentar parsear cada item como JSON
+                const parsed = JSON.parse(item);
+                return Array.isArray(parsed) ? parsed : [parsed];
+              } catch {
+                return [item];
+              }
+            }
+            return [item];
+          }).filter(Boolean);
+        }
       }
-      setLoading(false);
-    };
-    fetchProduct();
-  }, [id]);
+      
+      // Procesar features
+      let processedFeatures = data.features;
+      if (typeof data.features === "string") {
+        processedFeatures = data.features.split("|").map(f => f.trim()).filter(Boolean);
+      }
+      
+      const fixedData = {
+        ...data,
+        gallery: processedGallery || [],
+        features: processedFeatures || [],
+      };
+      
+      console.log("Producto procesado:", fixedData);
+      console.log("Imagen principal:", fixedData.image);
+      console.log("Galería procesada:", fixedData.gallery);
+      
+      setProduct(fixedData);
+    }
+    setLoading(false);
+  };
+  fetchProduct();
+}, [id]);
 
   useEffect(() => {
     if (product && product.category) {
@@ -60,17 +104,6 @@ const ProductDetailPage = () => {
     }
   }, [product, id]);
   
-  if (loading) {
-    return (
-      <Layout>
-        <div className="container mx-auto px-4 py-12 text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-[#D3E4FD] mx-auto"></div>
-          <p className="mt-4 text-gray-600">Cargando producto...</p>
-        </div>
-      </Layout>
-    );
-  }
-
   if (!product) {
     return (
       <Layout>
@@ -151,41 +184,37 @@ const ProductDetailPage = () => {
     window.open(whatsappUrl, '_blank');
   };
   
-  // Mejorar el manejo de imágenes
-  const getGalleryImages = () => {
-    const images = [];
+  // Usar la galería real del producto con mejor manejo de imágenes vacías
+  const galleryImages = (() => {
+    console.log("=== PROCESANDO IMÁGENES ===");
+    console.log("Producto actual:", product);
+    console.log("Galería del producto:", product.gallery);
+    console.log("Imagen principal:", product.image);
+    
+    const allImages = [];
     
     // Añadir imagen principal si existe
-    if (product.image && product.image.trim() !== "") {
-      images.push(product.image);
+    if (product.image && product.image.trim() !== '') {
+      allImages.push(product.image);
     }
     
-    // Añadir imágenes de galería si existen
-    if (product.gallery && Array.isArray(product.gallery)) {
-      product.gallery.forEach(img => {
-        if (img && img.trim() !== "" && !images.includes(img)) {
-          images.push(img);
-        }
-      });
+    // Añadir imágenes de la galería si existen
+    if (product.gallery && Array.isArray(product.gallery) && product.gallery.length > 0) {
+      const galleryUrls = product.gallery.filter(img => img && img.trim() !== '' && img !== product.image);
+      allImages.push(...galleryUrls);
     }
     
-    // Si no hay imágenes, usar una imagen por defecto
-    if (images.length === 0) {
-      images.push("/img/placeholder.svg"); // Asegúrate de tener esta imagen
+    // Si no hay imágenes, usar placeholder
+    if (allImages.length === 0) {
+      console.log("No hay imágenes, usando placeholder");
+      return ['/img/placeholder.svg'];
     }
     
-    console.log("Gallery images:", images);
-    return images;
-  };
+    console.log("Galería final procesada:", allImages);
+    return allImages;
+  })();
 
-  // Función helper para manejar errores de imagen
-  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-    const target = e.currentTarget;
-    console.error("Error loading image:", target.src);
-    target.src = "/img/placeholder.svg";
-  };
-
-  const galleryImages = getGalleryImages();
+  console.log("Galería final de imágenes:", galleryImages);
   
   return (
     <Layout>
@@ -206,34 +235,30 @@ const ProductDetailPage = () => {
             {/* Main Image */}
             <div className="bg-white rounded-2xl overflow-hidden mb-4">
               <img 
-                src={galleryImages[selectedImageIndex] || "/img/placeholder.svg"} 
+                src={galleryImages[selectedImageIndex]} 
                 alt={product.name} 
                 className="w-full object-cover aspect-square"
-                onError={handleImageError}
               />
             </div>
             
             {/* Image Gallery */}
-            {galleryImages.length > 1 && (
-              <div className="grid grid-cols-4 gap-4">
-                {galleryImages.map((image, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setSelectedImageIndex(index)}
-                    className={`bg-white rounded-lg overflow-hidden border-2 ${
-                      selectedImageIndex === index ? "border-[#FEC6A1]" : "border-transparent"
-                    }`}
-                  >
-                    <img 
-                      src={image} 
-                      alt={`${product.name} - imagen ${index + 1}`} 
-                      className="w-full h-full object-cover aspect-square"
-                      onError={handleImageError}
-                    />
-                  </button>
-                ))}
-              </div>
-            )}
+            <div className="grid grid-cols-4 gap-4">
+              {galleryImages.map((image, index) => (
+                <button
+                  key={index}
+                  onClick={() => setSelectedImageIndex(index)}
+                  className={`bg-white rounded-lg overflow-hidden border-2 ${
+                    selectedImageIndex === index ? "border-[#FEC6A1]" : "border-transparent"
+                  }`}
+                >
+                  <img 
+                    src={image} 
+                    alt={`${product.name} - imagen ${index + 1}`} 
+                    className="w-full h-full object-cover aspect-square"
+                  />
+                </button>
+              ))}
+            </div>
           </div>
           
           {/* Product Info */}
