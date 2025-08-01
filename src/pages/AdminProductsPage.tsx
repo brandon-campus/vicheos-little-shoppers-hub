@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 const initialForm = {
   name: "",
   description: "",
-  price: "",
+  price: "0", // Cambiado a "0" como valor por defecto
   image: "",
   category: "",
   isOffer: false,
@@ -24,13 +24,47 @@ const initialForm = {
   tallyFormUrl: ""
 };
 
-// Nueva función para subir una imagen a Supabase Storage y devolver la URL pública
+// Función mejorada para subir imágenes
 async function uploadImageToSupabase(file) {
-  const filePath = `imagenes/${Date.now()}_${file.name}`;
-  const { data, error } = await supabase.storage.from('productos').upload(filePath, file);
-  if (error) throw error;
-  const publicUrl = supabase.storage.from('productos').getPublicUrl(data.path).data.publicUrl;
-  return publicUrl;
+  try {
+    console.log("Iniciando subida de imagen:", file.name);
+    
+    // Limpiar el nombre del archivo
+    const cleanFileName = file.name
+      .replace(/[^a-zA-Z0-9.-]/g, '_')
+      .replace(/_+/g, '_')
+      .replace(/^_|_$/g, '');
+    
+    const filePath = `imagenes/${Date.now()}_${cleanFileName}`;
+    console.log("Ruta del archivo:", filePath);
+    
+    const { data, error } = await supabase.storage
+      .from('productos')
+      .upload(filePath, file, {
+        cacheControl: '3600',
+        upsert: false
+      });
+    
+    if (error) {
+      console.error("Error al subir archivo:", error);
+      throw new Error(`Error al subir archivo: ${error.message}`);
+    }
+    
+    console.log("Archivo subido exitosamente:", data);
+    
+    // Obtener la URL pública
+    const { data: publicUrlData } = supabase.storage
+      .from('productos')
+      .getPublicUrl(data.path);
+    
+    console.log("URL pública generada:", publicUrlData.publicUrl);
+    
+    return publicUrlData.publicUrl;
+    
+  } catch (error) {
+    console.error("Error en uploadImageToSupabase:", error);
+    throw error;
+  }
 }
 
 const AdminProductsPage = () => {
@@ -124,48 +158,65 @@ const AdminProductsPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.name || !form.price) {
-      toast.error("Nombre y precio son obligatorios");
+    
+    if (!form.name.trim()) {
+      toast.error("El nombre del producto es obligatorio");
       return;
     }
+
     let imageUrl = form.image;
     let galleryUrls = typeof form.gallery === "string" ? form.gallery.split("|").map((url) => url.trim()).filter(Boolean) : [];
+    
     try {
       // Subir imagen principal si hay archivo nuevo
       if (imageFile) {
+        console.log("Subiendo imagen principal...");
         imageUrl = await uploadImageToSupabase(imageFile);
+        console.log("URL de imagen principal obtenida:", imageUrl);
       }
+      
       // Subir galería si hay archivos nuevos
       if (galleryFiles.length > 0) {
+        console.log("Subiendo galería...");
         const uploads = await Promise.all(galleryFiles.map(file => uploadImageToSupabase(file)));
         galleryUrls = uploads;
+        console.log("URLs de galería obtenidas:", galleryUrls);
       }
     } catch (err) {
+      console.error("Error al subir imágenes:", err);
       toast.error("Error al subir imágenes: " + err.message);
       return;
     }
+
     const productData = {
       ...form,
-      price: parseFloat(form.price),
-      category: isNaN(Number(form.category)) ? form.category : Number(form.category),
-      stock: Number(form.stock),
-      discountPercentage: Number(form.discountPercentage),
-      rating: Number(form.rating),
-      reviews: Number(form.reviews),
-      image: imageUrl,
+      name: form.name.trim(),
+      price: parseFloat(form.price) || 0,
+      category: form.category || "Sin categoría",
+      stock: Number(form.stock) || 1,
+      discountPercentage: Number(form.discountPercentage) || 0,
+      rating: Number(form.rating) || 0,
+      reviews: Number(form.reviews) || 0,
+      image: imageUrl || "", // Asegurar que la URL se guarde
       gallery: galleryUrls,
       features: typeof form.features === "string" ? form.features.split("|").map((f) => f.trim()).filter(Boolean) : [],
     };
+
+    console.log("Datos del producto a guardar:", productData);
+
     let result;
     if (editId) {
       result = await supabase.from("productos").update(productData).eq("id", editId);
     } else {
       result = await supabase.from("productos").insert([productData]);
     }
+    
     if (result.error) {
+      console.error("Error al guardar producto:", result.error);
       toast.error("Error al guardar producto: " + result.error.message);
     } else {
-      toast.success(editId ? "Producto actualizado" : "Producto creado");
+      console.log("Producto guardado exitosamente:", result.data);
+      toast.success(editId ? "Producto actualizado" : "Producto creado exitosamente");
       fetchProducts();
       handleCloseForm();
       setImageFile(null);
@@ -230,19 +281,139 @@ const AdminProductsPage = () => {
             <form onSubmit={handleSubmit} className="bg-white p-8 rounded-2xl shadow-md w-full max-w-lg space-y-4 relative max-h-[90vh] overflow-y-auto">
               <button type="button" onClick={handleCloseForm} className="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-xl">×</button>
               <h2 className="text-xl font-bold mb-2">{editId ? "Editar producto" : "Crear producto"}</h2>
+              
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-gray-700 mb-1">Nombre</label>
-                  <Input name="name" value={form.name} onChange={handleChange} required />
+                <div className="md:col-span-2">
+                  <label className="block text-gray-700 mb-1">
+                    Nombre del producto <span className="text-red-500">*</span>
+                  </label>
+                  <Input 
+                    name="name" 
+                    value={form.name} 
+                    onChange={handleChange} 
+                    required 
+                    placeholder="Ej: Mochila para bebé"
+                  />
                 </div>
+                
+                <div className="md:col-span-2">
+                  <label className="block text-gray-700 mb-1">Descripción</label>
+                  <Textarea 
+                    name="description" 
+                    value={form.description} 
+                    onChange={handleChange} 
+                    placeholder="Descripción del producto (opcional)"
+                  />
+                </div>
+                
                 <div>
                   <label className="block text-gray-700 mb-1">Precio</label>
-                  <Input name="price" type="number" value={form.price} onChange={handleChange} required min={0} />
+                  <Input 
+                    name="price" 
+                    type="number" 
+                    value={form.price} 
+                    onChange={handleChange} 
+                    min={0} 
+                    step={0.01}
+                    placeholder="0.00"
+                  />
                 </div>
+                
                 <div>
-                  <label className="block text-gray-700 mb-1">Imagen principal (URL o subir archivo)</label>
-                  <Input name="image" value={form.image} onChange={handleChange} placeholder="URL de imagen (opcional si subes archivo)" />
-                  <input type="file" accept="image/*" onChange={handleImageFileChange} className="mt-2" />
+                  <label className="block text-gray-700 mb-1">Categoría</label>
+                  <Input 
+                    name="category" 
+                    value={form.category} 
+                    onChange={handleChange} 
+                    placeholder="Ej: Mochilas"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-gray-700 mb-1">Stock</label>
+                  <Input 
+                    name="stock" 
+                    type="number" 
+                    value={form.stock} 
+                    onChange={handleChange} 
+                    min={0} 
+                    placeholder="1"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-gray-700 mb-1">¿Es nuevo?</label>
+                  <input 
+                    name="isNew" 
+                    type="checkbox" 
+                    checked={form.isNew} 
+                    onChange={handleChange} 
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-gray-700 mb-1">¿Está en oferta?</label>
+                  <input 
+                    name="isOffer" 
+                    type="checkbox" 
+                    checked={form.isOffer} 
+                    onChange={handleChange} 
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-gray-700 mb-1">% Descuento</label>
+                  <Input 
+                    name="discountPercentage" 
+                    type="number" 
+                    value={form.discountPercentage} 
+                    onChange={handleChange} 
+                    min={0} 
+                    max={100} 
+                    placeholder="0"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-gray-700 mb-1">Rating</label>
+                  <Input 
+                    name="rating" 
+                    type="number" 
+                    value={form.rating} 
+                    onChange={handleChange} 
+                    min={0} 
+                    max={5} 
+                    step={0.1} 
+                    placeholder="0"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-gray-700 mb-1">Reseñas</label>
+                  <Input 
+                    name="reviews" 
+                    type="number" 
+                    value={form.reviews} 
+                    onChange={handleChange} 
+                    min={0} 
+                    placeholder="0"
+                  />
+                </div>
+                
+                <div className="md:col-span-2">
+                  <label className="block text-gray-700 mb-1">Imagen principal</label>
+                  <Input 
+                    name="image" 
+                    value={form.image} 
+                    onChange={handleChange} 
+                    placeholder="URL de imagen (opcional)"
+                  />
+                  <input 
+                    type="file" 
+                    accept="image/*" 
+                    onChange={handleImageFileChange} 
+                    className="mt-2" 
+                  />
                   {/* Preview de imagen principal */}
                   {(imagePreview || form.image) && (
                     <div className="mt-2">
@@ -254,38 +425,22 @@ const AdminProductsPage = () => {
                     </div>
                   )}
                 </div>
-                <div>
-                  <label className="block text-gray-700 mb-1">Categoría</label>
-                  <Input name="category" value={form.category} onChange={handleChange} />
-                </div>
-                <div>
-                  <label className="block text-gray-700 mb-1">Stock</label>
-                  <Input name="stock" type="number" value={form.stock} onChange={handleChange} min={0} />
-                </div>
-                <div>
-                  <label className="block text-gray-700 mb-1">¿Es nuevo?</label>
-                  <input name="isNew" type="checkbox" checked={form.isNew} onChange={handleChange} />
-                </div>
-                <div>
-                  <label className="block text-gray-700 mb-1">¿Está en oferta?</label>
-                  <input name="isOffer" type="checkbox" checked={form.isOffer} onChange={handleChange} />
-                </div>
-                <div>
-                  <label className="block text-gray-700 mb-1">% Descuento</label>
-                  <Input name="discountPercentage" type="number" value={form.discountPercentage} onChange={handleChange} min={0} max={100} />
-                </div>
-                <div>
-                  <label className="block text-gray-700 mb-1">Rating</label>
-                  <Input name="rating" type="number" value={form.rating} onChange={handleChange} min={0} max={5} step={0.1} />
-                </div>
-                <div>
-                  <label className="block text-gray-700 mb-1">Reseñas</label>
-                  <Input name="reviews" type="number" value={form.reviews} onChange={handleChange} min={0} />
-                </div>
+                
                 <div className="md:col-span-2">
-                  <label className="block text-gray-700 mb-1">Galería (URLs separadas por | o subir archivos)</label>
-                  <Textarea name="gallery" value={form.gallery} onChange={handleChange} placeholder="URLs separadas por | (opcional si subes archivos)" />
-                  <input type="file" accept="image/*" multiple onChange={handleGalleryFilesChange} className="mt-2" />
+                  <label className="block text-gray-700 mb-1">Galería de imágenes</label>
+                  <Textarea 
+                    name="gallery" 
+                    value={form.gallery} 
+                    onChange={handleChange} 
+                    placeholder="URLs separadas por | (opcional)"
+                  />
+                  <input 
+                    type="file" 
+                    accept="image/*" 
+                    multiple 
+                    onChange={handleGalleryFilesChange} 
+                    className="mt-2" 
+                  />
                   {/* Previews de galería */}
                   {galleryPreviews.length > 0 && (
                     <div className="flex flex-wrap gap-2 mt-2">
@@ -313,14 +468,27 @@ const AdminProductsPage = () => {
                     </div>
                   )}
                 </div>
+                
                 <div className="md:col-span-2">
-                  <label className="block text-gray-700 mb-1">Características (separadas por |)</label>
-                  <Textarea name="features" value={form.features} onChange={handleChange} />
+                  <label className="block text-gray-700 mb-1">Características</label>
+                  <Textarea 
+                    name="features" 
+                    value={form.features} 
+                    onChange={handleChange} 
+                    placeholder="Características separadas por | (opcional)"
+                  />
                 </div>
+                
                 <div className="md:col-span-2">
                   <label className="block text-gray-700 mb-1">URL de formulario de compra (Tally)</label>
-                  <Input name="tallyFormUrl" value={form.tallyFormUrl} onChange={handleChange} />
+                  <Input 
+                    name="tallyFormUrl" 
+                    value={form.tallyFormUrl} 
+                    onChange={handleChange} 
+                    placeholder="https://tally.so/..."
+                  />
                 </div>
+                
                 <div className="md:col-span-2 flex justify-end">
                   <Button type="submit" className="bg-[#D3E4FD] hover:bg-[#c1d8f8] text-gray-800">
                     {editId ? "Guardar cambios" : "Crear producto"}
