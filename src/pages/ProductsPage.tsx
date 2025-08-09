@@ -81,7 +81,7 @@ const ProductsPage = () => {
     
     // Filter by category if specified
     if (categoryParam) {
-      result = result.filter(product => product.category === categoryParam);
+      result = result.filter(product => product.category === parseInt(categoryParam));
     }
     
     // Sort products
