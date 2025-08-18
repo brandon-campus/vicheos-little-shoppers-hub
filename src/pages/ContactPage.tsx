@@ -47,10 +47,25 @@ const ContactPage = () => {
   return (
     <Layout>
       <SEO 
-        title="Contacto - Bicheos | Estamos aquí para ayudarte"
-        description="Contáctanos para más información sobre nuestros productos para bebés. Atención personalizada y soporte técnico disponible."
-        keywords="contacto Bicheos, soporte bebés, atención al cliente, productos bebés, ayuda Bicheos"
-        url="https://bicheos.com/contacto"
+        title="Contacto Bicheos Perú | Atención al Cliente Productos para Bebés"
+        description="Contáctanos para consultas sobre productos para bebés en Perú. WhatsApp: +51 947-154-677. Envío gratis a todo Perú. Atención personalizada para el cuidado de tu bebé."
+        keywords="contacto Bicheos Perú, atención cliente bebés, WhatsApp bebés Perú, consultas productos bebés Lima, soporte Bicheos Perú"
+        url="https://www.bicheos.com/contacto"
+        structuredData={{
+          "@context": "https://schema.org",
+          "@type": "ContactPage",
+          "name": "Contacto Bicheos Perú",
+          "description": "Página de contacto para productos para bebés en Perú",
+          "url": "https://www.bicheos.com/contacto",
+          "mainEntity": {
+            "@type": "Organization",
+            "name": "Bicheos Perú",
+            "telephone": "+51-947-154-677",
+            "contactType": "customer service",
+            "areaServed": "PE",
+            "availableLanguage": "Spanish"
+          }
+        }}
       />
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-semibold text-gray-800 mb-8">Contacto</h1>

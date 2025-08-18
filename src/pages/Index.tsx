@@ -259,10 +259,22 @@ const Index = () => {
   return (
     <Layout>
       <SEO 
-        title="Bicheos - Productos electrónicos innovadores para bebés"
-        description="Descubre productos electrónicos innovadores para bebés en Bicheos. Especialmente diseñados para mamás primerizas. Envío gratis y garantía de calidad."
-        keywords="productos para bebés, electrónicos bebés, juguetes bebés, mamás primerizas, cuidado infantil, Bicheos"
-        url="https://bicheos.com"
+        title="Bicheos Perú - Productos para Bebés | Envío Gratis y Pago con Yape"
+        description="Tienda online de productos para bebés en Perú. Orejeras de seguridad, esterilizadores UV, termómetros y más. Envío gratis a todo Perú. Paga con Yape. Productos de calidad para el cuidado de tu bebé."
+        keywords="productos para bebés Perú, juguetes bebés Lima, orejeras bebés, esterilizador chupones, termómetro bebé, almohadillas lactancia, cuidado infantil Perú, tienda bebés online, envío gratis Perú, pago Yape bebés"
+        url="https://www.bicheos.com"
+        structuredData={{
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          "name": "Bicheos Perú",
+          "url": "https://www.bicheos.com",
+          "description": "Tienda online de productos para bebés en Perú",
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://www.bicheos.com/productos?buscar={search_term_string}",
+            "query-input": "required name=search_term_string"
+          }
+        }}
       />
       <HeroSlider />
 

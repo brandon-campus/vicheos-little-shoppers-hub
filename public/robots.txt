@@ -1,7 +1,7 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://bicheos.com/sitemap.xml
+Sitemap: https://www.bicheos.com/sitemap.xml
 
 # Disallow admin areas
 Disallow: /admin/
@@ -12,3 +12,7 @@ Disallow: /carrito/
 Allow: /productos/
 Allow: /categorias/
 Allow: /contacto/
+Allow: /producto/
+
+# Crawl delay
+Crawl-delay: 1

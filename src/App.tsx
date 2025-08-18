@@ -23,6 +23,7 @@ import AdminContactosPage from "./pages/AdminContactosPage";
 import AdminReclamosPage from "./pages/AdminReclamosPage";
 import AdminPedidosPage from "./pages/AdminPedidosPage";
 import { CartProvider } from "./CartContext";
+import Analytics from "./components/shared/Analytics";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +35,7 @@ const App = () => (
         <Sonner />
         <CartProvider>
           <BrowserRouter>
+            <Analytics />
             <ScrollToTop />
             <Routes>
               <Route path="/" element={<Index />} />

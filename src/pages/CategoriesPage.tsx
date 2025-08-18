@@ -7,10 +7,28 @@ const CategoriesPage = () => {
   return (
     <Layout>
       <SEO 
-        title="Categorías - Bicheos | Encuentra tu vicheo ideal"
-        description="Explora nuestras categorías de productos para bebés. Desde juguetes electrónicos hasta dispositivos de seguridad, encuentra todo lo que necesitas."
-        keywords="categorías bebés, juguetes bebés, seguridad infantil, productos electrónicos bebés, Bicheos categorías"
-        url="https://bicheos.com/categorias"
+        title="Categorías de Productos para Bebés Perú | Seguridad, Alimentación, Cuidado - Bicheos"
+        description="Explora nuestras categorías de productos para bebés en Perú. Seguridad y protección, alimentación y lactancia, cuidados e higiene, paseo y viajes. Envío gratis a todo Perú."
+        keywords="categorías bebés Perú, seguridad bebés, alimentación lactancia, cuidado higiene bebé, paseo viajes bebé, productos bebés Lima, tienda bebés online Perú"
+        url="https://www.bicheos.com/categorias"
+        structuredData={{
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          "name": "Categorías de Productos para Bebés",
+          "description": "Categorías de productos para bebés en Perú",
+          "url": "https://www.bicheos.com/categorias",
+          "numberOfItems": categories.length,
+          "itemListElement": categories.map((category, index) => ({
+            "@type": "ListItem",
+            "position": index + 1,
+            "item": {
+              "@type": "Category",
+              "name": category.name,
+              "description": `Productos de ${category.name} para bebés`,
+              "url": `https://www.bicheos.com/productos?categoria=${category.id}`
+            }
+          }))
+        }}
       />
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-semibold text-gray-800 mb-3">Categorías</h1>

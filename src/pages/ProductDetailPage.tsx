@@ -17,6 +17,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/lib/supabaseClient";
 import { useCart } from "@/CartContext";
+import SEO from "@/components/shared/SEO";
+import { generateProductStructuredData } from "@/data/seoConfig";
 
 const ProductDetailPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -218,6 +220,15 @@ const ProductDetailPage = () => {
   
   return (
     <Layout>
+      {product && (
+        <SEO 
+          title={`${product.name} - Bicheos Perú | Productos para Bebés`}
+          description={`${product.description.substring(0, 150)}... Compra ${product.name} en Perú. Envío gratis a todo Perú. Paga con Yape.`}
+          keywords={`${product.name}, productos bebés Perú, ${product.category === 1 ? 'seguridad bebés' : product.category === 2 ? 'alimentación lactancia' : product.category === 3 ? 'cuidado higiene bebé' : 'paseo viajes bebé'}, tienda bebés online Perú`}
+          url={`https://www.bicheos.com/producto/${product.id}`}
+          structuredData={generateProductStructuredData(product)}
+        />
+      )}
       <div className="container mx-auto px-4 py-8">
         {/* Breadcrumbs */}
         <nav className="flex mb-6 text-sm text-gray-500">

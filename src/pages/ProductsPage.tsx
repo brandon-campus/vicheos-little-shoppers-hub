@@ -141,10 +141,35 @@ const ProductsPage = () => {
   return (
     <Layout>
       <SEO 
-        title="Productos - Bicheos | Productos electrónicos para bebés"
-        description="Explora nuestra colección completa de productos electrónicos para bebés. Encuentra juguetes, dispositivos de seguridad y más en Bicheos."
-        keywords="productos bebés, juguetes electrónicos, dispositivos bebés, seguridad infantil, Bicheos productos"
-        url="https://bicheos.com/productos"
+        title="Productos para Bebés Perú | Orejeras, Esterilizadores, Termómetros - Bicheos"
+        description="Compra productos para bebés en Perú. Orejeras de seguridad, esterilizadores UV, termómetros, almohadillas de lactancia y más. Envío gratis a todo Perú. Paga con Yape."
+        keywords="productos bebés Perú, orejeras bebés, esterilizador chupones, termómetro bebé, almohadillas lactancia, juguetes bebés Lima, cuidado infantil Perú, tienda bebés online"
+        url="https://www.bicheos.com/productos"
+        structuredData={{
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          "name": "Productos para Bebés",
+          "description": "Catálogo completo de productos para bebés en Perú",
+          "url": "https://www.bicheos.com/productos",
+          "numberOfItems": products.length,
+          "itemListElement": products.slice(0, 10).map((product, index) => ({
+            "@type": "ListItem",
+            "position": index + 1,
+            "item": {
+              "@type": "Product",
+              "name": product.name,
+              "description": product.description,
+              "image": product.image,
+              "url": `https://www.bicheos.com/producto/${product.id}`,
+              "offers": {
+                "@type": "Offer",
+                "price": product.price,
+                "priceCurrency": "PEN",
+                "availability": product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock"
+              }
+            }
+          }))
+        }}
       />
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-semibold text-gray-800 mb-8">
